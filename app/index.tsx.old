@@ -1,0 +1,51 @@
+'use client'
+
+import React, { useEffect, useState } from 'react'
+
+type LoginResponse = {
+  token?: string
+  message?: string
+  // tambahkan properti lain sesuai response API kamu
+}
+
+export default function ApiTestPage() {
+  const [data, setData] = useState<LoginResponse | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const login = async () => {
+      try {
+        const res = await fetch('https://app.prazelab.my.id/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: 'admin4',
+            password: 'admin4',
+          }),
+        })
+
+        if (!res.ok) {
+          const errorText = await res.text()
+          throw new Error(`Error ${res.status}: ${errorText}`)
+        }
+
+        const json: LoginResponse = await res.json()
+        setData(json)
+      } catch (err: any) {
+        console.error('Login API error:', err)
+        setError('Gagal menghubungi API: ' + err.message)
+      }
+    }
+
+    login()
+  }, [])
+
+  if (error) return <pre style={{ color: 'red' }}>{error}</pre>
+  if (!data) return <p>Loading...</p>
+
+  return (
+    <pre>{JSON.stringify(data, null, 2)}</pre>
+  )
+}
