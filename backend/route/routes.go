@@ -13,9 +13,11 @@ func Setup(router *gin.Engine, authHandler *handler.AuthHandler, userHandler *ha
 	// Protected routes (require token)
 	auth := router.Group("/", middleware.JWTMiddleware())
 	{
+		auth.GET("/users/:id", userHandler.GetUserByID)
 		auth.POST("/refresh", authHandler.Refresh)
 		auth.GET("/users", userHandler.GetAll)
 		auth.PUT("/users", userHandler.Update)
 		auth.DELETE("/users/delete", userHandler.Delete)
+		// auth.POST("/logout", authHandler.Logout)
 	}
 }

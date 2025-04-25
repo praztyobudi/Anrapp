@@ -6,3 +6,4 @@ type LoginResponse struct {
 	RefreshToken string                 `json:"refreshToken"`
 	Data         map[string]interface{} `json:"data"`
 }
+

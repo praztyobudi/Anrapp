@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//midlleware
+
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")

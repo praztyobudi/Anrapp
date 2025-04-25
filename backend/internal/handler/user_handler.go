@@ -4,6 +4,7 @@ import (
 	"backend/internal/dto"
 	"backend/internal/usecase"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +14,64 @@ type UserHandler struct {
 }
 
 func NewUserHandler(uc usecase.UserUsecase) *UserHandler {
-	return &UserHandler{uc}
+	return &UserHandler{UserUsecase: uc}
+}
+
+func (h *UserHandler) GetUserByID(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"meta": gin.H{
+				"message": "ID harus berupa angka",
+				"code":    http.StatusBadRequest,
+				"status":  "error",
+			},
+			"data": nil,
+		})
+		return
+	}
+
+	user, err := h.UserUsecase.GetByID(id)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" || err.Error() == "user tidak ditemukan" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"meta": gin.H{
+					"message": "User tidak ditemukan",
+					"code":    http.StatusNotFound,
+					"status":  "error",
+				},
+				"data": nil,
+			})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"meta": gin.H{
+					"message": "Gagal mengambil user: " + err.Error(),
+					"code":    http.StatusInternalServerError,
+					"status":  "error",
+				},
+				"data": nil,
+			})
+		}
+		return
+	}
+
+	// Kalau berhasil
+	c.JSON(http.StatusOK, gin.H{
+		"meta": gin.H{
+			"message": "Berhasil mendapatkan user",
+			"code":    http.StatusOK,
+			"status":  "success",
+		},
+		"data": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+			"name":     user.Name,
+			"department": gin.H{
+				"department": user.Department.Department,
+			},
+		},
+	})
 }
 
 func (h *UserHandler) GetAll(c *gin.Context) {

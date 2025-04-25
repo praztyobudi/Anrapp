@@ -16,22 +16,19 @@ type Claims struct {
 
 // GenerateToken buat token JWT
 func GenerateToken(userID int) (string, error) {
-	expirationTime := time.Now().Add(1 * time.Minute)
-
-	claims := &Claims{
+	claims := Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Minute)),
 		},
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtKey)
 }
 
 // GenerateRefreshToken buat refresh token
 func GenerateRefreshToken(userID int) (string, error) {
-	expirationTime := time.Now().Add(7 * 24 * time.Hour) // 7 hari
+	expirationTime := time.Now().Add(1 * time.Hour) // 7 hari
 
 	claims := &Claims{
 		UserID: userID,

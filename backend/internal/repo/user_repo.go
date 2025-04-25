@@ -4,9 +4,11 @@ import (
 	"backend/internal/entity"
 	"context"
 	"database/sql"
+	"fmt"
 )
 
 type UserRepository interface {
+	GetByID(id int) (entity.User, error)
 	FindByUsername(ctx context.Context, username string) (*entity.User, error)
 	FindDepartmentByName(ctx context.Context, name string) (*entity.Department, error)
 	CreateUser(ctx context.Context, user *entity.User) error
@@ -22,6 +24,38 @@ type userRepository struct {
 func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db}
 }
+
+func (r *userRepository) GetByID(id int) (entity.User, error) {
+	query := `
+		SELECT u.id, u.username, u.name, d.id, d.department
+		FROM users u
+		LEFT JOIN tb_department d ON u.department_id = d.id
+		WHERE u.id = $1
+	`
+
+	row := r.db.QueryRow(query, id)
+
+	var user entity.User
+	user.Department = &entity.Department{}
+	err := row.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Name,
+		&user.Department.ID,
+		&user.Department.Department,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, fmt.Errorf("user tidak ditemukan")
+		}
+		return user, err
+	}
+
+	return user, nil
+}
+
+
 
 // FindByUsername retrieves a user by username
 func (r *userRepository) FindByUsername(ctx context.Context, username string) (*entity.User, error) {

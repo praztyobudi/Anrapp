@@ -13,6 +13,7 @@ import (
 )
 
 type UserUsecase interface {
+	GetByID(id int) (entity.User, error)
 	Login(ctx context.Context, username, password string) (*entity.User, error)
 	Register(ctx context.Context, req *dto.RegisterRequest) error
 	GetUsers(ctx context.Context) ([]*entity.User, error)
@@ -27,6 +28,11 @@ type userUsecaseImpl struct {
 func NewUserUsecase(repo repository.UserRepository) UserUsecase {
 	return &userUsecaseImpl{repo}
 }
+
+func (u *userUsecaseImpl) GetByID(id int) (entity.User, error) {
+    return u.repo.GetByID(id)
+}
+
 
 func (u *userUsecaseImpl) Login(ctx context.Context, username, password string) (*entity.User, error) {
 	user, err := u.repo.FindByUsername(ctx, username)
