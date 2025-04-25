@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -8,30 +9,56 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-
+  
     try {
       const res = await fetch('https://app.prazelab.my.id/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-
+  
       const data = await res.json();
-
+  
       if (!res.ok) {
         setErrorMsg(data.message || 'Login gagal');
         return;
       }
-
-      localStorage.setItem('token', data.token);
+  
+      // Simpan token di cookie dengan waktu kedaluwarsa 1 jam
+      Cookies.set('token', data.token, { expires: 1 / 24, secure: true, sameSite: 'Strict' });
       router.push('/dashboard');
     } catch (err) {
       setErrorMsg('Terjadi kesalahan saat menghubungi server');
     }
   };
+  // const handleLogin = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setErrorMsg('');
+
+  //   try {
+  //     const res = await fetch('https://app.prazelab.my.id/api/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ username, password }),
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (!res.ok) {
+  //       setErrorMsg(data.message || 'Login gagal');
+  //       return;
+  //     }
+
+  //     localStorage.setItem('token', data.token);
+  //     router.push('/dashboard');
+  //   } catch (err) {
+  //     setErrorMsg('Terjadi kesalahan saat menghubungi server');
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
