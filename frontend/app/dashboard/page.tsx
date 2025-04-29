@@ -115,21 +115,6 @@ export default function Dashboard() {
     );
   }
 
-  if (error && !userData) {
-    return (
-      <div className="min-h-screen bg-[#f6fffa] flex items-center justify-center">
-        <div className="text-center text-red-500">
-          <p>{error}</p>
-          <button
-            onClick={handleLogout}
-            className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-xl shadow transition-colors"
-          >
-            Back to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
   if (isLoggingOut) {
     return (
       <div className="min-h-screen bg-[#f6fffa] p-4 md:p-10 flex items-center justify-center">
@@ -141,58 +126,49 @@ export default function Dashboard() {
     );
   }
   return (
-    <div className="flex flex-col items-center space-y-8 md:space-y-14 w-full max-w-5xl mx-auto p-4 md:p-20">
-      <div className="fixed top-4 right-4 z-50 flex items-center gap-3 bg-white px-4 py-2">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-semibold text-sm rounded-lg px-3 py-2 bg-white shadow-md hover:shadow-lg transition-all duration-200"
-        >
-          <LogOut className="w-4 h-4" /> Logout
-        </button>
-      </div>
-
-
-      <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold text-black mb-4 md:mb-6">
-          SELAMAT DATANG DI SISTEM INFORMASI TERPUSAT
-        </h1>
-        <h2 className="text-lg md:text-xl">
-          Halloo{' '}
-          <span className="font-semibold text-blue-600">
-            {userData?.name ?? userData?.username ?? 'Loading...'}
-          </span>
-          !
-        </h2>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 w-full">
-        {cardData.map(({ id, label, path, icon: Icon, iconColor }) => {
-          return (
-            // <button
-            //   key={id}
-            //   onClick={() => handleNavigation(path)}
-            //   className="bg-white rounded-2xl shadow-md h-28 md:h-32 flex flex-col items-center justify-center text-gray-600 text-base md:text-lg font-semibold hover:shadow-xl hover:bg-gray-50 transition-all p-4 hover:scale-105 transform transition-transform duration-200"
-            // >
-            //   <Icon className={`w-6 h-6 md:w-8 md:h-8 mb-2 ${iconColor}`} />
-            //   {label}
-            // </button>
-            <button
-              key={id}
-              onClick={() => {
-                if (label === 'Speak Your Mind') {
-                  openPopup();
-                } else {
-                  handleNavigation(path);
-                }
-              }}
-              className="bg-white rounded-2xl shadow-md h-28 md:h-32 flex flex-col items-center justify-center text-gray-600 text-base md:text-lg font-semibold hover:shadow-xl hover:bg-gray-50 transition-all p-4 hover:scale-105 transform transition-transform duration-200"
-            >
-              <Icon className={`w-6 h-6 md:w-8 md:h-8 mb-2 ${iconColor}`} />
-              {label}
-            </button>
-          );
-        })}
-        <Popup isOpen={isPopupOpen} onClose={closePopup} />
+    <div className="min-h-screen bg-[#f6fffa] justify-center">
+      <div className="flex flex-col items-center space-y-8 md:space-y-14 w-full max-w-5xl mx-auto p-4 md:p-20">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-2">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-semibold text-sm rounded-lg px-3 py-2 bg-white shadow-md hover:shadow-lg transition-all duration-200"
+          >
+            <LogOut className="w-4 h-4" /> Logout
+          </button>
+        </div>
+        <div className="text-center">
+          <h1 className="text-2xl md:text-3xl font-bold text-black mb-4 md:mb-6">
+            SELAMAT DATANG DI SISTEM INFORMASI TERPUSAT
+          </h1>
+          <h2 className="text-lg md:text-xl">
+            Halloo{' '}
+            <span className="font-semibold text-blue-600">
+              {userData?.name ?? userData?.username ?? 'Loading...'}
+            </span>
+            !
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 w-full">
+          {cardData.map(({ id, label, path, icon: Icon, iconColor }) => {
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  if (label === 'Speak Your Mind') {
+                    openPopup();
+                  } else {
+                    handleNavigation(path);
+                  }
+                }}
+                className="bg-white rounded-2xl shadow-md h-28 md:h-32 flex flex-col items-center justify-center text-gray-600 text-base md:text-lg font-semibold hover:shadow-xl hover:bg-gray-50 transition-all p-4 hover:scale-105 transform transition-transform duration-200"
+              >
+                <Icon className={`w-6 h-6 md:w-8 md:h-8 mb-2 ${iconColor}`} />
+                {label}
+              </button>
+            );
+          })}
+          <Popup isOpen={isPopupOpen} onClose={closePopup} />
+        </div>
       </div>
     </div>
   );
