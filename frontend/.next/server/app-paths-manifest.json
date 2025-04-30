@@ -2,6 +2,6 @@
   "/auth/login/page": "app/auth/login/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/speakyourmind/kritiksaran/page": "app/dashboard/speakyourmind/kritiksaran/page.js",
-  "/dashboard/speakyourmind/fraud/page": "app/dashboard/speakyourmind/fraud/page.js",
-  "/dashboard/speakyourmind/ide/page": "app/dashboard/speakyourmind/ide/page.js"
+  "/dashboard/speakyourmind/ide/page": "app/dashboard/speakyourmind/ide/page.js",
+  "/auth/register/page": "app/auth/register/page.js"
 }

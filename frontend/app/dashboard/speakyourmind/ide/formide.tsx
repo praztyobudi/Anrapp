@@ -32,9 +32,11 @@ export default function FormIde({ onSubmit }: { onSubmit: (data: any) => void })
           className="flex-1 bg-gray-100 p-3 rounded-xl text-sm text-gray-600 focus:outline-none"
         >
           <option value="">Select Department</option>
-          <option value="Marketing">Marketing</option>
-          <option value="Production">Production</option>
-          <option value="HR">HR</option>
+          <option value="manager">Manager</option>
+          <option value="staff">Staff</option>
+          <option value="operator">Operator</option>
+          <option value="marketing">Marketing</option>
+          <option value="hc">HC</option>
         </select>
       </div>
 
