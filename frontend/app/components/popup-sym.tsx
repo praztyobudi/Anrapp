@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Lightbulb, MessageSquare, AlertTriangle } from 'lucide-react';
+import { Lightbulb, AlertTriangle, MessageSquareQuote } from 'lucide-react';
 import Link from 'next/link';
 
 interface PopupProps {
@@ -11,6 +11,7 @@ interface CardButtonProps {
   icon: React.ReactNode;
   label: string;
   path: string;
+  bgColor?: string;
 }
 
 const Popup: React.FC<PopupProps> = ({ isOpen, onClose }) => {
@@ -54,8 +55,8 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose }) => {
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
           <CardButton path='../dashboard/speakyourmind/ide' icon={<Lightbulb className="w-8 h-8" />} label="Ide" />
-          <CardButton path='#' icon={<MessageSquare className="w-8 h-8" />} label="Kritik & Saran" />
-          <CardButton path='#' icon={<AlertTriangle className="w-8 h-8" />} label="Fraud" />
+          <CardButton path='../dashboard/speakyourmind/kritiksaran' icon={<MessageSquareQuote className="w-8 h-8" />} label="Kritik & Saran" />
+          <CardButton path='../dashboard/speakyourmind/fraud' icon={<AlertTriangle className="w-8 h-8" color='red' />} label="Fraud" bgColor='bg-red-100' />
         </div>
       </div>
     </div>
@@ -63,14 +64,15 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose }) => {
 
 };
 
-const CardButton: React.FC<CardButtonProps> = ({ path, icon, label }) => {
+const CardButton: React.FC<CardButtonProps> = ({ path, icon, label, bgColor="bg-green-100" }) => {
   return (
     <Link href={path} className="no-underline">
       <div className="w-40 h-40 flex flex-col justify-center items-center border rounded-lg hover:shadow-lg transition-all duration-300 cursor-pointer">
-        <div className="bg-blue-100 p-3 rounded-full text-blue-600 transition-transform hover:scale-110">
+        {/* <div className="bg-green-100 p-3 rounded-full text-anr transition-transform hover:scale-110"> */}
+        <div className={`${bgColor} p-3 rounded-full text-anr transition-transform hover:scale-110`}>
           {icon}
         </div>
-        <span className="mt-3 text-center text-sm font-semibold">{label}</span>
+        <span className="text-gray-600 mt-3 text-center text-lg font-semibold">{label}</span>
       </div>
     </Link>
   );
