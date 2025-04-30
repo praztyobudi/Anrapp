@@ -94,9 +94,11 @@ export default function RegisterPage() {
               className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-anr"
             >
               <option value="" disabled>Pilih Departemen</option>
-              <option value="staff">Staff</option>
               <option value="manager">Manager</option>
+              <option value="staff">Staff</option>
+              <option value="operator">Operator</option>
               <option value="marketing">Marketing</option>
+              <option value="hc">HC</option>
             </select>
           </div>
 
