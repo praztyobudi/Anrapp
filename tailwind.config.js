@@ -6,7 +6,15 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}', // untuk komponen
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        anr: {
+          DEFAULT: '#19633E', 
+          100: '#124F31', 
+          200: '#288C5A', 
+        } 
+      },
+    },
   },
   plugins: [],
 };
