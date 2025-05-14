@@ -1,6 +1,6 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
+import userRoute from './routes/user_routes.js'
 
 const app = express();
 
@@ -11,16 +11,13 @@ const isProduction = process.env.NODE_ENV === 'production';
 const corsOptions = {
   origin: isProduction
     ? 'https://app.prazelab.my.id'   // domain frontend saat production
-    : 'http://localhost:3000',      // domain frontend saat development
+    : 'http://192.168.1.10:3000',      // domain frontend saat development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use('/api/users', userRoute);
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello from Express with Docker & Postgres!' });
-});
-
-module.exports = app;
+export default app;
