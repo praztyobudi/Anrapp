@@ -3,11 +3,13 @@ services:
     image: nginx:latest
     container_name: anrapp-nginx
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d:ro
+      # - ./nginx/default.conf:/etc/nginx/conf.d:ro
+      - ../nginx:/etc/nginx/conf.d:ro
     ports:
       - "8800:80"
     networks:
-      - appnet
+      # - appnet
+      - backend-node_appnet
     depends_on:
       - backend
     restart: unless-stopped
@@ -24,11 +26,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_HOST=pgdata
-      - DB_PORT=${POSTGRES_PORT:-5432}
-      - DB_USER=${POSTGRES_USER}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=${POSTGRES_DB}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAMEDB}
       - NODE_ENV=development
     networks:
       - appnet
@@ -39,9 +41,9 @@ services:
     container_name: anrapp-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAMEDB}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - /home/praze/projectapp/anrapp/pgdata:/var/lib/postgresql/data
     ports:

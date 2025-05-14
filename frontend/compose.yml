@@ -10,14 +10,14 @@ services:
       - .:/app
       - /app/node_modules
     networks:
-      # - backend-node_appnet
-      - backend_appnet
+      - backend-node_appnet
+      # - backend_appnet
     environment:
       - NEXT_PUBLIC_API_URL=http://anrapp-backend:8080
     tty: true
     stdin_open: true
     
 networks:
-  # backend-node_appnet:
-  backend_appnet:
+  backend-node_appnet:
+  # backend_appnet:
     external: true

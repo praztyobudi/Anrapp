@@ -22,7 +22,7 @@ func main() {
 
 	// Tambah middleware CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://app.prazelab.my.id"},
+		AllowOrigins:     []string{"https://app.prazelab.my.id, http://192.168.1.10:8800"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

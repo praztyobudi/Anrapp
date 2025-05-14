@@ -48,6 +48,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate refresh token"})
 		return
 	}
+
 	// Manual custom response
 	data := map[string]interface{}{
 		"id":         user.ID,
