@@ -8,8 +8,8 @@ services:
     ports:
       - "8800:80"
     networks:
-      # - appnet
-      - backend-node_appnet
+      - appnet
+      # - backend-node_appnet
     depends_on:
       - backend
     restart: unless-stopped
