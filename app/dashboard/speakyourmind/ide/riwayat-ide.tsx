@@ -39,7 +39,7 @@ console.log("ListIde rendered with ideas:", ideas);
       <div className="flex flex-col gap-4 max-h-[465px]">
         <div className="flex items-center justify-between sticky top-0 bg-white z-10">
           {/* Kiri */}
-          <div className="font-semibold text-xs md:text-sm text-gray-600">
+          <div className="font-semibold text-xs md:text-base text-gray-600">
             Your idea history
           </div>
           {/* Tengah */}
