@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Idea } from "./types";
 import { ChevronDown, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-// import { formatTgl } from "../../../components/formattgl"; // Pastikan path ini sesuai dengan struktur folder Anda
 
 type FormIdeProps = {
   onSubmit: (data: Idea) => Promise<{ success: boolean; error?: Error }>;
@@ -17,9 +16,9 @@ export default function FormIde({
   onSubmit,
   defaultValue,
   mode = "create",
-  onCancel
-}:   // Default mode is create,
-  FormIdeProps) {
+  onCancel,
+}: // Default mode is create,
+FormIdeProps) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [idea, setIdea] = useState("");
@@ -41,8 +40,18 @@ export default function FormIde({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!from || !to || !idea) {
-      toast.error("Semua field wajib diisi!");
+      toast.error("All fields must be filled out!");
       setIsSubmitting(false);
+      return;
+    }
+    if (
+      from === defaultValue?.from &&
+      to === defaultValue?.to &&
+      idea === defaultValue?.idea
+    ) {
+      onCancel?.();
+      toast.error("No changes!");
+      // setIsSubmitting(false);
       return;
     }
     const formData: Idea = {
@@ -51,7 +60,7 @@ export default function FormIde({
       from,
       to,
       idea,
-      date : new Date().toISOString(),
+      date: new Date().toISOString(),
       // date: `${new Date().toLocaleDateString("id-ID")} - New!`,
     };
 
@@ -61,12 +70,12 @@ export default function FormIde({
       toast.success(
         mode === "edit" ? "Successful updating!" : "Successfully send!"
       );
-    //  // Reset form hanya untuk mode create
-    //   if (mode === "create") {
-    //     setFrom("");
-    //     setTo("");
-    //     setIdea("");
-    //   }
+      //  // Reset form hanya untuk mode create
+      //   if (mode === "create") {
+      //     setFrom("");
+      //     setTo("");
+      //     setIdea("");
+      //   }
       if (mode === "edit") {
         // Jika mode edit, reset hanya jika ada onCancel
         onCancel?.();
@@ -88,7 +97,6 @@ export default function FormIde({
   };
 
   return (
-    
     <>
       <Toaster position="top-right" reverseOrder={true} />
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:gap-6">
@@ -113,8 +121,9 @@ export default function FormIde({
               <select
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
-                className={`appearance-none w-full bg-gray-100 p-2 md:p-3 rounded-lg md:rounded-xl text-sm md:text-base ${to === "" ? "text-gray-400" : "text-gray-600"
-                  } focus:outline-green-600`}
+                className={`appearance-none w-full bg-gray-100 p-2 md:p-3 rounded-lg md:rounded-xl text-sm md:text-base ${
+                  to === "" ? "text-gray-400" : "text-gray-600"
+                } focus:outline-green-600`}
               >
                 <option value="" disabled hidden>
                   Department
@@ -142,8 +151,9 @@ export default function FormIde({
               type="button"
               onClick={handleCancel}
               disabled={isSubmitting}
-              className={`text-white bg-red-500 hover:bg-red-900 font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex items-center gap-2 shadow-md transition ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-                } text-sm md:text-base`}
+              className={`text-white bg-red-500 hover:bg-red-900 font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex items-center gap-2 shadow-md transition ${
+                isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+              } text-sm md:text-base`}
             >
               {isSubmitting ? (
                 "Memproses..."
@@ -159,8 +169,9 @@ export default function FormIde({
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`bg-green-700 hover:bg-green-900 text-white font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex items-center gap-2 shadow-md transition ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-              } text-sm md:text-base`}
+            className={`bg-green-700 hover:bg-green-900 text-white font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex items-center gap-2 shadow-md transition ${
+              isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            } text-sm md:text-base`}
           >
             {isSubmitting ? (
               "Memproses..."
