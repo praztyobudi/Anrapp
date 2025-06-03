@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import * as userRepo from '../repo/user_repo.js'
+import * as findDepartment from '../helper/find_department.js';
 
 export class UserService {
   async findAllUsers() {
@@ -15,11 +16,11 @@ export class UserService {
     const saltRounds = 10;
     const hashPass = await bcrypt.hash(password, saltRounds);
     const userAdd = await userRepo.createUser(name, hashPass, username, department);
-    const getNameDept = await userRepo.getDepartmentName({ userId: userAdd.id });
+    const getNameDept = await findDepartment.getDepartmentName({ userId: userAdd.id });
     return getNameDept;
   }
   async updateUser(id, data) {
-    const departmentId = await userRepo.getDepartmentName({ departmentName: data.department });
+    const departmentId = await findDepartment.getDepartmentName({ departmentName: data.department });
 
     if (!departmentId) {
       throw new Error(`Department "${data.department}" not found`);

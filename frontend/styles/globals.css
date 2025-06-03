@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  @layer utilities {
+    .dot-anim::after {
+      content: ".";
+      animation: dots 1.2s steps(3, end) infinite;
+    }
+  
+    @keyframes dots {
+      0% { content: "."; }
+      22% { content: ".."; }
+      66% { content: "..."; }
+      100% { content: "."; }
+    }
+  }
