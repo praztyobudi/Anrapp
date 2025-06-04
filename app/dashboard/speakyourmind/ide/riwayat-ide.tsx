@@ -39,7 +39,7 @@ console.log("ListIde rendered with ideas:", ideas);
       <div className="flex flex-col gap-4 max-h-[465px]">
         <div className="flex items-center justify-between sticky top-0 bg-white z-10">
           {/* Kiri */}
-          <div className="font-semibold text-xs md:text-base text-gray-600">
+          <div className="font-bold text-sm md:text-base text-gray-600">
             Your idea history
           </div>
           {/* Tengah */}
@@ -64,8 +64,9 @@ console.log("ListIde rendered with ideas:", ideas);
             </button>
           </div>
         </div>
+        <div className="border-b-2"></div>
 
-        <div className="overflow-y-auto max-h-[500px] my-2">
+        <div className="overflow-y-auto max-h-[500px]">
           {loading ? (
             <div className="text-center text-gray-500 text-sm"> <span>Loading</span>
               <span className="dot-anim ml-1 inline-block">.</span></div>

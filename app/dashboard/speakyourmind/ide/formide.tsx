@@ -102,7 +102,7 @@ FormIdeProps) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:gap-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:flex-1 flex flex-col">
-            <label className="mb-1 pl-2 md:pl-3 font-semibold text-xs md:text-base text-gray-600">
+            <label className="mb-1 pl-2 md:pl-3 font-semibold text-sm md:text-base text-gray-600">
               Your name
             </label>
             <input

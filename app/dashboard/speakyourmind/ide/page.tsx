@@ -6,7 +6,6 @@ import ListIde from "./riwayat-ide";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Idea } from "./types";
-import Image from "next/image";
 
 export default function Home(p0: unknown) {
   const router = useRouter();
