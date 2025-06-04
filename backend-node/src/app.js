@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import userRoute from './routes/user_routes.js'
+import ideRoute from './routes/ide_routes.js';
+import krisarRoute from './routes/krisar_routes.js';
 
 const app = express();
 
@@ -18,7 +20,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/users', userRoute);
+app.use('/', krisarRoute);
+app.use('/', ideRoute);
 app.use('/', userRoute);
+// app.use('/users', userRoute);
+// Krisar routes
 
 export default app;
