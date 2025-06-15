@@ -2,7 +2,7 @@ import { query } from '../config/db.js';
 
 export const findUserByUsername = async (username) => {
   const result = await query(
-    'SELECT * FROM users WHERE username = $1',
+    'SELECT u.id, u.username, u.password, u.name, d.department AS department, r.role as role FROM users u LEFT JOIN tb_department d ON u.department_id = d.id LEFT JOIN tb_role r on u.role_id = r.id WHERE u.username = $1',
     [username]
   );
   return result.rows[0];

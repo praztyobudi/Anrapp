@@ -8,8 +8,8 @@ export const krisarRepo = {
             user_id, 
             critique, 
             suggestion,
-            TO_CHAR(created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
             FROM tb_kritiksaran;`;
         const result = await query(sql);
         return result.rows;
@@ -20,8 +20,8 @@ export const krisarRepo = {
             user_id, 
             critique, 
             suggestion,
-            TO_CHAR(created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
             FROM tb_kritiksaran WHERE id = $1;`;
         const result = await query(sql, [id]);
         return result.rows[0];
@@ -34,8 +34,8 @@ export const krisarRepo = {
             user_id, 
             critique, 
             suggestion,
-            TO_CHAR(created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at;`;
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
         const result = await query(sql, [user_id, critique, suggestion]);
         return result.rows[0];
     },
@@ -46,8 +46,8 @@ export const krisarRepo = {
             id,
             critique, 
             suggestion,
-            TO_CHAR(created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at;`;
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
         const result = await query(sql, [critique, suggestion, id]);
         return result.rows[0];
     },
@@ -57,8 +57,8 @@ export const krisarRepo = {
             user_id, 
             critique, 
             suggestion,
-            TO_CHAR(created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at;`;
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
         const result = await query(sql, [id]);
         return result.rows[0];
     }
