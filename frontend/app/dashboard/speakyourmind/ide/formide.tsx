@@ -1,16 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Idea } from "./types";
+import { Idea, propsFormIde } from "./types";
 import { ChevronDown, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-
-type FormIdeProps = {
-  onSubmit: (data: Idea) => Promise<{ success: boolean; error?: Error }>;
-  defaultValue?: Idea;
-  mode: "create" | "edit";
-  onCancel?: () => void;
-};
 
 export default function FormIde({
   onSubmit,
@@ -18,7 +11,7 @@ export default function FormIde({
   mode = "create",
   onCancel,
 }: // Default mode is create,
-FormIdeProps) {
+propsFormIde) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [idea, setIdea] = useState("");
@@ -110,7 +103,7 @@ FormIdeProps) {
               value={from}
               onChange={(e) => setFrom(e.target.value)}
               placeholder="From who?"
-              className="bg-gray-100 p-2 md:p-3 rounded-lg md:rounded-xl text-xs md:text-base text-gray-800 focus:outline-green-600"
+              className="bg-gray-50 p-2 md:p-3 rounded-lg md:rounded-xl text-xs md:text-base text-gray-800 focus:outline-green-600"
             />
           </div>
           <div className="w-full md:flex-1 flex flex-col">
@@ -121,7 +114,7 @@ FormIdeProps) {
               <select
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
-                className={`appearance-none w-full bg-gray-100 p-2 md:p-3 rounded-lg md:rounded-xl text-sm md:text-base ${
+                className={`appearance-none w-full bg-gray-50 p-2 md:p-3 rounded-lg md:rounded-xl text-sm md:text-base ${
                   to === "" ? "text-gray-400" : "text-gray-600"
                 } focus:outline-green-600`}
               >
@@ -140,7 +133,7 @@ FormIdeProps) {
         </div>
 
         <textarea
-          className="bg-gray-100 rounded-lg md:rounded-xl p-3 md:p-4 min-h-[150px] md:min-h-[295px] text-sm md:text-lg text-gray-700 focus:outline-green-600 resize-none"
+          className="bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4 min-h-[150px] md:min-h-[295px] text-sm md:text-lg text-gray-700 focus:outline-green-600 resize-none"
           placeholder="Tulis ide kreatifmu di sini..."
           value={idea}
           onChange={(e) => setIdea(e.target.value)}

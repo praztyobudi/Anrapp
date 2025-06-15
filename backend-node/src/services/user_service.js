@@ -12,12 +12,12 @@ export class UserService {
     if (!user) throw new Error('User not found');
     return user;
   }
-  async createUser(name, password, username, department) {
+  async createUser(name, password, username, department, role) {
     const saltRounds = 10;
     const hashPass = await bcrypt.hash(password, saltRounds);
-    const userAdd = await userRepo.createUser(name, hashPass, username, department);
-    const getNameDept = await findDepartment.getDepartmentName({ userId: userAdd.id });
-    return getNameDept;
+    const userAdd = await userRepo.createUser(name, hashPass, username, department, role);
+    // const getNameDept = await findDepartment.getDepartmentName({ userId: userAdd.id });
+    return userAdd;
   }
   async updateUser(id, data) {
     const departmentId = await findDepartment.getDepartmentName({ departmentName: data.department });

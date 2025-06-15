@@ -95,17 +95,23 @@ export default function Home(p0: unknown) {
       if (!res.ok) throw new Error("Fetch failed");
 
       const result = await res.json();
-      const data = Array.isArray(result.data) ? result.data : [result.data];
+      // const data = Array.isArray(result.data) ? result.data : [result.data];
 
-      const mappedIdeas: Idea[] = data.map((item: any) => ({
+      // const mappedIdeas: Idea[] = data.map((item: any) => ({
+      //   id: item?.id ?? 0,
+      //   from: item?.name ?? "Anonim",
+      //   to: item?.department ?? "Tidak diketahui",
+      //   idea: item?.message ?? "",
+      //   date: item?.updated_at ?? "",
+      // }));
+
+      setIdeas(result.data.map((item: any) => ({
         id: item?.id ?? 0,
         from: item?.name ?? "Anonim",
         to: item?.department ?? "Tidak diketahui",
         idea: item?.message ?? "",
         date: item?.updated_at ?? "",
-      }));
-
-      setIdeas(mappedIdeas);
+      })));
       setStatusMsg("Updated!");
     } catch (error) {
       console.error("Gagal refresh data:", error);
