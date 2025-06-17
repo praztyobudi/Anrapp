@@ -11,10 +11,11 @@ interface UserData {
   name: string;
   username: string;
   password: string;
-  Department?: {
-    id: number;
-    departement: string;
-  };
+  department: string;
+  // Department?: {
+  //   id: number;
+  //   departement: string;
+  // };
 }
 
 interface CardItem {
@@ -39,55 +40,123 @@ export default function Dashboard() {
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = Cookies.get('token');
-        if (!token) {
-          router.push('/auth/login');
-          return;
-        }
+  // useEffect(() => {
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const token = Cookies.get('token');
+  //       if (!token) {
+  //         router.push('/auth/login');
+  //         return;
+  //       }
 
-        const response = await fetch('https://app.prazelab.my.id/api/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-        });
+  //       const response = await fetch('https://app.prazelab.my.id/api/users', {
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`
+  //         },
+  //       });
 
-        if (response.status === 401) {
-          Cookies.remove('token');
-          setSessionExpired(true);
-          router.push('/auth/login');
-          return;
-        }
+  //       if (response.status === 401) {
+  //         Cookies.remove('token');
+  //         setSessionExpired(true);
+  //         router.push('/auth/login');
+  //         return;
+  //       }
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch user data');
-        }
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         throw new Error(errorData.message || 'Failed to fetch user data');
+  //       }
 
-        const data = await response.json();
-        console.log('userData fetched:', data.data);
-        setUserData(data.data);
-      } catch (err) {
-        console.error('Error fetching user data:', err);
-        setError('Failed to load user data');
+  //       const data = await response.json();
+  //       console.log('userData fetched:', data.data);
+  //       setUserData(data.data);
+  //     } catch (err) {
+  //       console.error('Error fetching user data:', err);
+  //       setError('Failed to load user data');
 
-        const storedUser = Cookies.get('user');
-        if (storedUser) {
-          try {
-            setUserData(JSON.parse(storedUser));
-          } catch (parseError) {
-            console.error('Error parsing stored user data:', parseError);
+  //       const storedUser = Cookies.get('user');
+  //       if (storedUser) {
+  //         try {
+  //           setUserData(JSON.parse(storedUser));
+  //         } catch (parseError) {
+  //           console.error('Error parsing stored user data:', parseError);
+  //         }
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchUserData();
+  // }, [router]);
+
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const token = Cookies.get('token');
+      if (!token) {
+        router.push('/auth/login');
+        return;
+      }
+
+      let response = await fetch('https://app.prazelab.my.id/api/users', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+
+      if (response.status === 401) {
+        const refreshToken = Cookies.get('refresh_token');
+        if (refreshToken) {
+          const refreshRes = await fetch('https://app.prazelab.my.id/api/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refreshToken })
+          });
+
+          if (refreshRes.ok) {
+            const newTokens = await refreshRes.json();
+            Cookies.set('token', newTokens.token, { path: '/' });
+            Cookies.set('refresh_token', newTokens.refresh_token, { path: '/' });
+            return fetchUserData(); // retry
           }
         }
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchUserData();
-  }, [router]);
+        Cookies.remove('token');
+        Cookies.remove('refresh_token');
+        setSessionExpired(true);
+        router.push('/auth/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || 'Failed to fetch user data');
+      }
+
+      const data = await response.json();
+      console.log('userData fetched:', data.data);
+      setUserData(data.data);
+      Cookies.set('user', JSON.stringify(data.data), { path: '/' });
+
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      setError('Failed to load user data');
+
+      const fallbackUser = Cookies.get('user');
+      if (fallbackUser) {
+        try {
+          setUserData(JSON.parse(fallbackUser));
+        } catch (parseErr) {
+          console.error('Error parsing fallback user:', parseErr);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchUserData();
+}, [router]);
+
 
   // useEffect(() => {
   //   if (userData) {
@@ -144,6 +213,7 @@ export default function Dashboard() {
       </div>
     );
   }
+  
   return (
     <div className="min-h-screen bg-[#f6fffa] justify-center">
       <div className="flex flex-col items-center space-y-8 md:space-y-14 w-full max-w-5xl mx-auto p-4 md:p-20">
@@ -165,10 +235,13 @@ export default function Dashboard() {
             SELAMAT DATANG DI SISTEM INFORMASI TERPUSAT
           </h1>
           <h2 className="text-lg md:text-xl">
-            Halloo{' '}
-            <span className="font-semibold text-blue-600">
-              {userData?.name ?? userData?.username ?? 'Loading...'}
-            </span>
+            Welcome {'  '}
+            <span>
+              {userData?.name ?? 'Loading...'}
+            </span> {' '}dari{' '}
+            <span>
+              {userData?.department ?? 'Loading...'}
+            </span> 
             !
           </h2>
         </div>

@@ -1,39 +1,44 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { LockKeyhole } from 'lucide-react';
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import { LockKeyhole } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg('');
+    setErrorMsg("");
 
     try {
-      const res = await fetch('https://app.prazelab.my.id/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("https://app.prazelab.my.id/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setErrorMsg(data.message || 'Login gagal');
+        setErrorMsg(data.message || "Login gagal");
         return;
       }
 
       // Simpan token di cookie dengan waktu kedaluwarsa 1 jam
-      Cookies.set('token', data.token, { expires: 1 / 24, secure: true, sameSite: 'Strict' });
-      router.push('/dashboard');
+      Cookies.set("token", data.data.token, { expires: 1, path: "/" }); // 1 day
+      Cookies.set("refresh_token", data.data.refresh_token, {
+        expires: 7,
+        path: "/",
+      }); // 7 days
+      Cookies.set("user", JSON.stringify(data.data), { path: "/" }); // Optional, untuk fallback di frontend
+
+      router.push("/dashboard");
     } catch (err) {
-      setErrorMsg('Terjadi kesalahan saat menghubungi server');
+      setErrorMsg("Terjadi kesalahan saat menghubungi server");
     }
   };
   // const handleLogin = async (e: React.FormEvent) => {
@@ -68,9 +73,11 @@ export default function LoginPage() {
           <div className="p-8">
             <div className="text-center mb-8">
               <div className="mx-auto w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mb-4">
-                <LockKeyhole color='#19633E' size={60} />
+                <LockKeyhole color="#19633E" size={60} />
               </div>
-              <h1 className="text-2xl font-bold text-gray-800">Selamat Datang</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Selamat Datang
+              </h1>
               <p className="text-gray-600 mt-2">Masuk ke akun Anda</p>
             </div>
 
@@ -94,7 +101,10 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Username
                 </label>
                 <div className="relative">
@@ -111,7 +121,10 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -138,8 +151,11 @@ export default function LoginPage() {
 
           <div className="bg-gray-50 px-8 py-6 text-center">
             <p className="text-gray-600 text-sm">
-              Belum punya akun?{' '}
-              <a href="/auth/register" className="text-anr hover:text-anr-100 font-medium">
+              Belum punya akun?{" "}
+              <a
+                href="/auth/register"
+                className="text-anr hover:text-anr-100 font-medium"
+              >
                 Daftar sekarang
               </a>
             </p>

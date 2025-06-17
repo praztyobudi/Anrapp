@@ -3,20 +3,39 @@
 import { useState } from "react";
 import FormFraud from "./form-fraud";
 import RiwayatFraud from "./riwayat-fraud";
+import { Fraud } from "./types";
 
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ShieldAlert } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
-  const [frauds, setFrauds] = useState<any[]>([]);
-
-  const addFraud = (fraud: any) => {
-    setFrauds([fraud, ...frauds]);
-  };
+  const [frauds, setFrauds] = useState<Fraud[]>([]);
 
   const goBack = () => {
     router.back();
+  };
+
+  const addFraud = async (fraud: Fraud) => {
+    try {
+      // Simulate an API call to add fraud
+      const response = await fetch('/api/fraud', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fraud),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add fraud');
+      }
+      const newFraud = await response.json();
+      setFrauds([newFraud, ...frauds]);
+      return { success: true };
+    } catch (error) {
+      console.error('Error adding fraud:', error);
+      return { success: false, error: error as Error };
+    }
   };
 
   return (

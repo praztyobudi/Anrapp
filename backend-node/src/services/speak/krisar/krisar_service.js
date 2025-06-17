@@ -20,11 +20,9 @@ class KrisarService {
         return await krisarRepo.krisarRepo.createKrisar(data);
     }
     async updateKrisar(id, data) {
-        // Assuming the repo has a method to update an existing Krisar entry
         return await krisarRepo.krisarRepo.updateKrisar(id, data);
     }
     async deleteKrisar(id) {
-        // Assuming the repo has a method to delete a Krisar entry
         return await krisarRepo.krisarRepo.deleteKrisar(id);
     }
 }

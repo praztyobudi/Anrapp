@@ -25,7 +25,8 @@ export const getKrisarById = async (req, res) => {
 };
 export const createKrisar = async (req, res) => {
     try {
-        const { user_id, critique, suggestion } = req.body;
+        const { critique, suggestion } = req.body;
+        const user_id = req.user?.id;
         if (!user_id || !critique || !suggestion) {
             return errorResponse(res, 'Missing required fields');
         }

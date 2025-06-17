@@ -23,7 +23,7 @@ export const authenticateToken = async (req, res, next) => {
 };
 export const authRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    const authRole = req.user?.role;
+    const authRole = req.user.role;
 
     if (!authRole) {
       return errorResponse(res, 'Unauthorized', 401);
