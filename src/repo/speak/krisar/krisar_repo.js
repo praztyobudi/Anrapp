@@ -1,5 +1,5 @@
 import { query } from "../../../config/db.js";
-import { getAllKrisar, getKrisarById } from "../../../controllers/speak/krisar/krisar_controller.js";
+// import { getAllKrisar, getKrisarById } from "../../../controllers/speak/krisar/krisar_controller.js";
 
 export const krisarRepo = {
     getAllKrisar: async () => {

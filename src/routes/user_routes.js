@@ -8,12 +8,12 @@ const router = Router();
 // Login
 router.post('/login', login);
 router.post('/refresh', refreshToken);
+router.post('/register', createUser);
 // Authenticated routes
 router.use(authenticateToken); // Middleware for authentication
 router.post('/logout', logout);
-router.get('/users', getAllUsers, authRoles('admin')); // Only admin can access this route
+router.get('/users', authRoles('admin'), getAllUsers); // Only admin can access this route
 router.get('/users/:id', getUserById);
-router.post('/users', createUser);
 router.put('/users/:id', updateUser);
 router.delete('/users/:id', deleteUser);
 

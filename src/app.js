@@ -3,6 +3,7 @@ import cors from 'cors';
 import userRoute from './routes/user_routes.js'
 import ideRoute from './routes/ide_routes.js';
 import krisarRoute from './routes/krisar_routes.js';
+import fraudRoute from './routes/fraud_routes.js';
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/', krisarRoute);
 app.use('/', ideRoute);
+app.use('/', fraudRoute);
+// user authentication routes
 app.use('/', userRoute);
 // app.use('/users', userRoute);
 // Krisar routes
