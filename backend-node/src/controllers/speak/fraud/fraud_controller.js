@@ -28,14 +28,15 @@ export const getFraudById = async (req, res) => {
 };
 export const createFraud = async (req, res) => {
   try {
-    const { type_id, fraud_message } = req.body;
+    const { types, fraud_message } = req.body;
     const user_id = req.user?.id;
-    if (!user_id || !type_id || !fraud_message) {
+    console.log("user_id", user_id);
+    if (!user_id || !types || !fraud_message) {
       return errorResponse(res, "Missing required fields");
     }
     const result = await FraudService.createFraud({
       user_id,
-      type_id,
+      types,
       fraud_message,
     });
     return successResponse(
@@ -52,8 +53,8 @@ export const createFraud = async (req, res) => {
 export const updateFraud = async (req, res) => {
   try {
     const id = req.params.id;
-    const { fraud_message, type_id } = req.body;
-    if (!fraud_message || !type_id) {
+    const { fraud_message, types } = req.body;
+    if (!fraud_message || !types) {
       return errorResponse(res, "Missing required fields");
     }
     const result = await FraudService.updateFraud(id, req.body);

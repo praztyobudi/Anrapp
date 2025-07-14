@@ -1,4 +1,4 @@
-import { Eye, RefreshCw, Trash2 } from "lucide-react";
+import { Eye, RefreshCw, RotateCw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { propsRiwayatKrisar } from "./types";
 
@@ -67,7 +67,7 @@ export default function RiwayatKrisar({
 
   return (
     <>
-      <div className="flex flex-col gap-4 min-h-[460px]">
+      <div className="flex flex-col gap-4 h-[460px]">
         <div className="flex items-center justify-between sticky top-0 bg-white z-10">
           {/* Kiri */}
           <div className="font-bold text-sm md:text-base text-gray-600">
@@ -99,8 +99,9 @@ export default function RiwayatKrisar({
             <div className="flex items-center justify-center h-full">
               <div className="text-center text-gray-500 text-sm">
                 {" "}
-                <span>Loading</span>
-                <span className="dot-anim ml-1 inline-block">.</span>
+                {/* <span>Loading</span>
+                <span className="dot-anim ml-1 inline-block">.</span> */}
+                <RotateCw size={16} className={loading ? "animate-spin" : ""} />
               </div>
             </div>
           ) : krisars.length === 0 ? (
@@ -119,17 +120,6 @@ export default function RiwayatKrisar({
                 <div className="flex justify-between items-center">
                   <div className="font-semibold text-gray-700 text-sm">
                     I'am Anonymous
-                    {/* {!isEdited(item.created_at, item.updated_at) &&
-                      isNew(item.created_at) && (
-                        <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 rounded text-[10px]">
-                          New!
-                        </span>
-                      )}
-                    {isEdited(item.created_at, item.updated_at) && (
-                      <span className="bg-yellow-100 text-yellow-600 ml-2 px-2 py-0.5 rounded text-[10px]">
-                        Edited!
-                      </span>
-                    )} */}
                     {isNew(item.created_at) && (
                       <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 rounded text-[12px]">
                         New !

@@ -21,9 +21,10 @@ class AuthService {
     // Optional: bisa generate JWT di sini
     const payload = {
       id: user.id,
-      username: user.username,
+      name: user.name,
       department: user.department,
       role: user.role,
+      // username: user.username,
     };
 
     //Generate Token JWT
@@ -45,11 +46,13 @@ class AuthService {
     
     // Return data yang dibutuhkan aja
     return {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      department: user.department,
-      role: user.role,
+      user: {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        department: user.department,
+        role: user.role,
+      },
       token,
       refreshToken,
     };

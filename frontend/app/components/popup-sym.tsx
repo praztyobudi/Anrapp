@@ -51,7 +51,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose }) => {
         ref={popupRef}
         className={`bg-white p-8 rounded-xl shadow-2xl transform transition-all duration-300 w-[90%] max-w-2xl ${showAnimation ? 'scale-100' : 'scale-95'}`}
       >
-        <h2 className="text-2xl font-semibold mb-6 text-center">Apa yang anda pikirkan?</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center">What do you think?</h2>
 
         <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
           <CardButton path='../dashboard/speakyourmind/ide' icon={<Lightbulb className="w-8 h-8" />} label="Ide" />

@@ -4,14 +4,29 @@ import { errorResponse } from '../helper/response_status.js';
 
 dotenv.config();
 
+// export const authenticateToken = async (req, res, next) => {
+//   const authHeader = req.headers['authorization'];
+
+//   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+//     return errorResponse(res, 'Token is required', 401);
+//   }
+
+//   const token = authHeader.split(' ')[1];
+
+//   try {
+//     const user = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = user;
+//     next();
+//   } catch (err) {
+//     return errorResponse(res, 'Invalid or expired token', 403);
+//   }
+// };
 export const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+  const token = req.cookies.accessToken;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return errorResponse(res, 'Token is required', 401);
+  if (!token) {
+    return errorResponse(res, 'Token is required (cookie missing)', 401);
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET);
@@ -21,6 +36,7 @@ export const authenticateToken = async (req, res, next) => {
     return errorResponse(res, 'Invalid or expired token', 403);
   }
 };
+
 export const authRoles = (...allowedRoles) => {
   return (req, res, next) => {
     const authRole = req.user.role;

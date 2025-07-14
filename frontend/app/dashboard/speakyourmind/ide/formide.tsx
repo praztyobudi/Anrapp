@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Idea, propsFormIde } from "./types";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, Send, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function FormIde({
@@ -85,7 +85,7 @@ propsFormIde) {
     setFrom("");
     setTo("");
     setIdea("");
-    toast.error("Canceled!");
+    // toast.error("Canceled!");
     onCancel?.(); // biar parent yang reset selectedIdea
   };
 
@@ -106,7 +106,7 @@ propsFormIde) {
               className="bg-gray-50 p-2 md:p-3 rounded-lg md:rounded-xl text-xs md:text-base text-gray-800 focus:outline-green-600"
             />
           </div>
-          <div className="w-full md:flex-1 flex flex-col">
+          <div className="w-full md:flex-1 flex flex-col">  
             <label className="mb-1 pl-2 md:pl-3 font-semibold text-sm md:text-base text-gray-600">
               To department
             </label>
@@ -152,8 +152,8 @@ propsFormIde) {
                 "Memproses..."
               ) : (
                 <>
-                  <span>Cancel</span>
                   <X className="w-4 h-4 md:w-5 md:h-5" />
+                  <span>Cancel</span>
                 </>
               )}
             </button>
@@ -170,24 +170,8 @@ propsFormIde) {
               "Memproses..."
             ) : (
               <>
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
                 <span>{mode === "edit" ? "Update" : "Send"}</span>
-                <svg
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M22 2L11 13"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M22 2L15 22L11 13L2 9L22 2Z"
-                  />
-                </svg>
               </>
             )}
           </button>
