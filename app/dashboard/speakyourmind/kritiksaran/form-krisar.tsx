@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Krisar, propsFormKrisar } from "./types";
 import toast, { Toaster } from "react-hot-toast";
-import { X } from "lucide-react";
+import { Send, X } from "lucide-react";
 
 export default function FormKrisar({
   onSubmit,
@@ -122,8 +122,8 @@ export default function FormKrisar({
                 "Memproses..."
               ) : (
                 <>
-                  <span>Cancel</span>
                   <X className="w-4 h-4 md:w-5 md:h-5" />
+                  <span>Cancel</span>
                 </>
               )}
             </button>
@@ -140,24 +140,8 @@ export default function FormKrisar({
               "Memproses..."
             ) : (
               <>
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
                 <span>{mode === "edit" ? "Update" : "Send"}</span>
-                <svg
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M22 2L11 13"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M22 2L15 22L11 13L2 9L22 2Z"
-                  />
-                </svg>
               </>
             )}
           </button>

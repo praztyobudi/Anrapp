@@ -1,21 +1,34 @@
 export type Fraud = {
+  types: string;
   id: number;
   user_id: number;
   fraud_message: string;
-  updated_at: string;
+  type_message: string;
   created_at: string;
+  updated_at: string;
 };
+
+export type FraudReq = {
+  id?: number;
+  fraud_message: string;
+  types: string;
+};
+
 export type propsFormFraud = {
-  onSubmit: (data: Fraud) => Promise<{ success: boolean; error?: Error }>;
-  defaultValue?: Fraud;
+  onSubmit: (fraud: FraudReq) => Promise<{ success: boolean; error?: Error }>;
+  defaultValue?: FraudReq;
   mode: "create" | "edit";
   onCancel?: () => void;
-  userId: number;
+  isLoading?: boolean;
+  refreshData: () => Promise<{success: boolean; error?: Error}>;
 };
+
 export type propsRiwayatFraud = {
-  editKrisar: (krisar: Fraud) => void;
-  deleteKrisar: (id: number) => Promise<{ success: boolean; error?: Error }>;
-  krisars: Fraud[];
-  refreshData: () => Promise<{ success: boolean; error?: Error }>;
+  frauds: Fraud[];
+  editFraud: (fraud: Fraud) => void;
+  deleteFraud: (id: number) => void;
+  refreshData: () => Promise<{success: boolean; error?: Error}>;
   statusMsg: string;
+  isLoading: boolean;
+  error: string | null;
 };
