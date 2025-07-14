@@ -1,19 +1,4 @@
 services:
-  nginx:
-    image: nginx:latest
-    container_name: anrapp-nginx
-    volumes:
-      # - ./nginx/default.conf:/etc/nginx/conf.d:ro
-      - ../nginx:/etc/nginx/conf.d:ro
-    ports:
-      - "8800:80"
-    networks:
-      - appnet
-      # - backend-node_appnet
-    depends_on:
-      - backend
-    restart: always
-   
   backend:
     build:
       context: .
@@ -35,63 +20,78 @@ services:
     networks:
       - appnet
     restart: always
+  
+  # nginx:
+  #   image: nginx:latest
+  #   container_name: anrapp-nginx
+  #   volumes:
+  #     # - ./nginx/default.conf:/etc/nginx/conf.d:ro
+  #     - ../nginx:/etc/nginx/conf.d:ro
+  #   ports:
+  #     - "8800:80"
+  #   networks:
+  #     - appnet
+  #     # - backend-node_appnet
+  #   # depends_on:
+  #   #   - backend
+  #   restart: always
 
-  pgdata:
-    image: postgres:17
-    container_name: anrapp-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DB_NAMEDB}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - /home/praze/projectapp/anrapp/pgdata:/var/lib/postgresql/data
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    networks:
-      - appnet
+  # pgdata:
+  #   image: postgres:17
+  #   container_name: anrapp-postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: ${DB_NAMEDB}
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - /home/praze/projectapp/anrapp/pgdata:/var/lib/postgresql/data
+  #   ports:
+  #     - "${POSTGRES_PORT:-5432}:5432"
+  #   networks:
+  #     - appnet
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: anrapp-pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    ports:
-      - "5555:80"
-    networks:
-      - appnet
-    depends_on:
-      - pgdata
+  # pgadmin:
+  #   image: dpage/pgadmin4:latest
+  #   container_name: anrapp-pgadmin
+  #   restart: unless-stopped
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+  #   ports:
+  #     - "5555:80"
+  #   networks:
+  #     - appnet
+  #   depends_on:
+  #     - pgdata
 
-  adminer:
-    image: adminer:latest
-    container_name: adminer
-    ports:
-      - "8081:8080"
-    networks:
-      - appnet
-    restart: always
+  # adminer:
+  #   image: adminer:latest
+  #   container_name: adminer
+  #   ports:
+  #     - "8081:8080"
+  #   networks:
+  #     - appnet
+  #   restart: always
 
-  redis:
-    image: redis:latest
-    container_name: anrapp-redis
-    # volumes:
-    #   - redis_data:/data
-    ports:
-      - "6379:6379"
-    networks:
-      - appnet
-    # sysctls:
-    #   - vm.overcommit_memory=1
-    restart: always
+  # redis:
+  #   image: redis:latest
+  #   container_name: anrapp-redis
+  #   # volumes:
+  #   #   - redis_data:/data
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - appnet
+  #   # sysctls:
+  #   #   - vm.overcommit_memory=1
+  #   restart: always
 
 # volumes:
 #   redis_data:
 
 networks:
   appnet:
-    driver: bridge
-  backend-node_appnet:
+    # driver: bridge
+  # backend-node_appnet:
     external: true

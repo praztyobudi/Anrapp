@@ -10,17 +10,12 @@ class FraudService {
   }
 
   async createFraud(data) {
-    const { user_id, fraud_message, type_id } = data;
-    if (!user_id || !fraud_message || !type_id) {
+    const { user_id, fraud_message, types } = data;
+    if (!user_id || !fraud_message || !types) {
       throw new Error(
         "Missing required fields: user_id, fraud_type, description"
       );
     }
-    const existingFraud = await fraudRepo.fraudRepo.getFraudById(data.id);
-    if (existingFraud) {
-      throw new Error("Fraud entry already exists with this ID");
-    }
-
     return await fraudRepo.fraudRepo.createFraud(data);
   }
 
