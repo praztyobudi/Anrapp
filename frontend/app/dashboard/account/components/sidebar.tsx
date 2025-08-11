@@ -1,6 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { Menu, ArrowLeft } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard/account', label: 'Dashboard' },
@@ -9,18 +11,35 @@ const navItems = [
 
 export default function Sidebar() {
   const path = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <aside className="w-64 min-h-screen bg-green-700 text-white hidden md:block">
-      <div className="p-6 font-bold text-2xl">Admin</div>
-      <nav className="space-y-2 px-4">
+    <aside
+      className={`bg-green-700 text-white min-h-screen duration-300 ${
+        collapsed ? 'w-16' : 'w-64'
+      } hidden md:block`}
+    >
+      <div className="flex items-center justify-between p-4">
+        {!collapsed && <div className="font-bold text-xl">Admin</div>}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-white hover:text-gray-200"
+        >
+          {collapsed ? <Menu size={20} /> : <ArrowLeft size={20} />}
+        </button>
+      </div>
+
+      <nav className="space-y-2 px-2">
         {navItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className={`block px-4 py-2 rounded ${path === item.href ? 'bg-green-900' : 'hover:bg-green-800'}`}
+            className={`flex items-center px-3 py-2 rounded hover:bg-green-800 ${
+              path === item.href ? 'bg-green-900' : ''
+            }`}
           >
-            {item.label}
+            <span className="material-icons mr-2">•</span>
+            {!collapsed && <span>{item.label}</span>}
           </Link>
         ))}
       </nav>

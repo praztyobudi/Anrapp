@@ -41,30 +41,6 @@ export default function LoginPage() {
       setErrorMsg("Terjadi kesalahan saat menghubungi server");
     }
   };
-  // const handleLogin = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setErrorMsg('');
-
-  //   try {
-  //     const res = await fetch('https://app.prazelab.my.id/api/login', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ username, password }),
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (!res.ok) {
-  //       setErrorMsg(data.message || 'Login gagal');
-  //       return;
-  //     }
-
-  //     localStorage.setItem('token', data.token);
-  //     router.push('/dashboard');
-  //   } catch (err) {
-  //     setErrorMsg('Terjadi kesalahan saat menghubungi server');
-  //   }
-  // };
 
   return (
     <div className="min-h-screen bg-green-50 flex items-center justify-center p-4">
