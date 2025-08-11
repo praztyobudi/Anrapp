@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import * as userRepo from '../repo/user_repo.js'
-import * as findDepartment from '../helper/find_department.js';
+import * as findDepartment from '../helper/find_data.js';
 
 export class UserService {
   async findAllUsers() {
@@ -20,23 +20,36 @@ export class UserService {
     return userAdd;
   }
   async updateUser(id, data) {
+    const existingUser = await userRepo.getUserById(id);
+    if (!existingUser) {
+      throw new Error('User not found');
+    }
     const departmentId = await findDepartment.getDepartmentName({ departmentName: data.department });
-
+    const roleId = await findDepartment.getRoleName(data.role);
     if (!departmentId) {
       throw new Error(`Department "${data.department}" not found`);
     }
-
+    if (data.username && data.username !== existingUser.username) {
+      const isTaken = await userRepo.findUserByUsername(data.username);
+      if (isTaken) {
+        throw new Error(`Username "${data.username}" already exists`);
+      }
+    }
     const updatedUser = {
       ...data,
-      department: departmentId
+      department: departmentId,
+      role: roleId
     };
     if (data.password) {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(data.password, saltRounds);
       updatedUser.password = hashedPassword;
+    } else {
+      updatedUser.password = existingUser.password; 
     }
     return await userRepo.updateUser(id, updatedUser);
   }
+  
   async deleteUserById(id) {
     // opsional: cek user dulu
     const user = await userRepo.getUserById(id);

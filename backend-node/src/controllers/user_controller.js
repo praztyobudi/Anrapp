@@ -59,13 +59,7 @@ export const updateUser = async (req, res) => {
   try {
     const id = req.params.id;
     const updated = await userService.updateUser(id, req.body);
-    return successResponse(res, "updated successfully", {
-      name: updated.name,
-      username: updated.username,
-      password: updated.password,
-      department: updated.department,
-      role: updated.user_role,
-    });
+    return successResponse(res, "updated successfully", updated);
   } catch (error) {
     return errorResponse(res, error.message);
   }

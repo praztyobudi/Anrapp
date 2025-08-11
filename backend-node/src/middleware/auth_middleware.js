@@ -23,7 +23,6 @@ dotenv.config();
 // };
 export const authenticateToken = async (req, res, next) => {
   const token = req.cookies.accessToken;
-
   if (!token) {
     return errorResponse(res, 'Token is required (cookie missing)', 401);
   }

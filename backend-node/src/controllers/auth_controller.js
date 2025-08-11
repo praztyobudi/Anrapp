@@ -3,49 +3,21 @@ import { successResponse, errorResponse } from '../helper/response_status.js';
 import redisClient from '../config/redis.js';
 import jwt from 'jsonwebtoken';
 
-// export const login = async (req, res) => {
-//   try {
-//     const { username, password } = req.body;
-
-//     if (!username || !password) {
-//       return errorResponse(res, 'Username and password are required', 400);
-//     }
-
-//     const user = await authService.login(username, password);
-//     console.log('User logged:', user.username + ' success, at ' + new Date().toLocaleDateString("id-ID"));
-//     return successResponse(res, 'Login successful', {
-//       id: user.id,
-//       name: user.name,
-//       username: user.username,
-//       department: user.department,
-//       role: user.role,
-//       token: user.token,
-//       refresh_token: user.refreshToken
-//     });
-//   } catch (error) {
-//     return errorResponse(res, error.message, 401);
-//   }
-// };
 export const login = async (req, res) => {
   try {
+    const userAgent = req.headers['user-agent'];
     const { username, password } = req.body;
-
     if (!username || !password) {
       return errorResponse(res, 'Username and password are required', 400);
     }
-
-    // Destructure dari hasil auth service
-    const { user, token, refreshToken } = await authService.login(username, password);
-
-    console.log('User logged:', user.username + ' success at', new Date().toLocaleString("id-ID"));
-
+    const { user, token, refreshToken, loginTime } = await authService.login(username, password, userAgent);
     // Set cookies
     res
       .cookie("accessToken", token, {
         httpOnly: true,
         secure: true,
         sameSite: "None", // Wajib kalau frontend beda origin
-        maxAge: 15 * 60 * 1000, // 15 menit
+        maxAge: 24 * 60 * 60 * 1000, // 1 hari
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -61,8 +33,10 @@ export const login = async (req, res) => {
       username: user.username,
       department: user.department,
       role: user.role,
-      token, // Optional: bisa dikirim juga kalau frontend butuh
-      refreshToken // Optional: bisa dikirim juga kalau frontend butuh
+      token,
+      refreshToken,
+      lastLogin: loginTime,
+      lastDevice: userAgent,
     });
 
   } catch (error) {
