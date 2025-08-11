@@ -21,3 +21,11 @@ export const getDepartmentName = async ({ userId, departmentName }) => {
   
     throw new Error('Either userId or departmentName must be provided');
   };
+
+  export const getRoleName = async (roleName) => {
+    const result = await query(
+      'SELECT id FROM tb_role WHERE role = $1',
+      [roleName]
+    );
+    return result.rows[0]?.id;
+  }

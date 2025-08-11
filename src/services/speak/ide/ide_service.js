@@ -1,5 +1,5 @@
 import * as fromIdeRepo from '../../../repo/speak/ide/ide_repo.js';
-import { getDepartmentName } from '../../../helper/find_department.js';
+import { getDepartmentName } from '../../../helper/find_data.js';
 
 class IdeService {
     async findAllIde() {
