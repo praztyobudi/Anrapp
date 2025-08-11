@@ -8,13 +8,15 @@ import {
   BarChart2,
   UserCog2,
   LogOut,
-  UserCircle2,
   RotateCw,
 } from "lucide-react";
 import Cookies from "js-cookie";
 import Popup from "../components/popup-sym";
 import toast from "react-hot-toast";
 import AuthGuard from "../components/auth";
+import { decodedToken } from "../utils/jwtdecode";
+import { getUserById } from "../libs/users/api";
+import LoadingAnim from "../components/loading-anim";
 
 interface UserData {
   id: number;
@@ -34,242 +36,60 @@ export default function Dashboard() {
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [sessionExpired, setSessionExpired] = useState(false);
-
+  // const [sessionExpired, setSessionExpired] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
   const openPopup = () => setIsPopupOpen(true);
   const closePopup = () => setIsPopupOpen(false);
 
-  const decodeToken = (token: string): UserData => {
-    const payload = token.split(".")[1];
-    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = base64.padEnd(
-      base64.length + ((4 - (base64.length % 4)) % 4),
-      "="
-    );
-    return JSON.parse(atob(padded));
-  };
-
-  useEffect(() => {
-    const token = Cookies.get("token");
-
-    if (token) {
-      try {
-        const decoded = decodeToken(token);
-        setUserData({
-          id: decoded.id,
-          name: decoded.name,
-          department: decoded.department,
-        });
-      } catch (err) {
-        console.error("Gagal decode token:", err);
-        toast.error("Terjadi kesalahan saat mengambil data user.");
-      }
-    }
-
+  const fetchData = useCallback(async () => {
     setLoading(false);
+    try {
+      const token = Cookies.get("token");
+      if (!token) throw new Error("Token tidak ditemukan");
+
+      const decoded = decodedToken(token);
+      if (!decoded) throw new Error("Token tidak valid");
+
+      const data = await getUserById(decoded.id);
+      if (!data || !data.data) {
+        throw new Error("Data user tidak ditemukan");
+      }
+      setUserData(data.data);
+    } catch (err) {
+      console.error("Gagal fetch data user:", err);
+      toast.error("Gagal ambil data user.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const token = Cookies.get('token');
-  //       if (!token) {
-  //         router.push('/auth/login');
-  //         return;
-  //       }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  //       const response = await fetch('https://app.prazelab.my.id/api/users', {
-  //         headers: {
-  //           'Authorization': `Bearer ${token}`
-  //         },
-  //       });
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchData();
+    };
 
-  //       if (response.status === 401) {
-  //         Cookies.remove('token');
-  //         setSessionExpired(true);
-  //         router.push('/auth/login');
-  //         return;
-  //       }
-
-  //       if (!response.ok) {
-  //         const errorData = await response.json();
-  //         throw new Error(errorData.message || 'Failed to fetch user data');
-  //       }
-
-  //       const data = await response.json();
-  //       console.log('userData fetched:', data.data);
-  //       setUserData(data.data);
-  //     } catch (err) {
-  //       console.error('Error fetching user data:', err);
-  //       setError('Failed to load user data');
-
-  //       const storedUser = Cookies.get('user');
-  //       if (storedUser) {
-  //         try {
-  //           setUserData(JSON.parse(storedUser));
-  //         } catch (parseError) {
-  //           console.error('Error parsing stored user data:', parseError);
-  //         }
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchUserData();
-  // }, [router]);
-
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       const token = Cookies.get("token");
-  //       if (!token) {
-  //         handleSessionExpired();
-  //         return;
-  //       }
-
-  //       let response = await fetch("https://app.prazelab.my.id/api/users", {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-
-  //       console.log("Response status:", response.status);
-
-  //       if (response.status === 401) {
-  //         const refreshToken = Cookies.get("refresh_token");
-
-  //         if (refreshToken) {
-  //           const refreshRes = await fetch(
-  //             "https://app.prazelab.my.id/api/refresh",
-  //             {
-  //               method: "POST",
-  //               headers: { "Content-Type": "application/json" },
-  //               body: JSON.stringify({ refresh_token: refreshToken }),
-  //             }
-  //           );
-
-  //           if (refreshRes.ok) {
-  //             const newTokens = await refreshRes.json();
-  //             Cookies.set("token", newTokens.token, { path: "/" });
-  //             Cookies.set("refresh_token", newTokens.refresh_token, {
-  //               path: "/",
-  //             });
-  //             return fetchUserData(); // Retry setelah refresh
-  //           }
-  //         }
-
-  //         handleSessionExpired();
-  //         return;
-  //       }
-
-  //       const data = await response.json();
-  //       setUserData(data.data);
-  //       console.log("User data fetched:", data.data);
-  //       // Simpan data user ke cookies untuk fallback
-  //       Cookies.set("user", JSON.stringify(data.data), { path: "/" });
-  //     } catch (err) {
-  //       console.error("Error fetching user data:", err);
-  //       setError("Gagal mengambil data user");
-
-  //       const fallbackUser = Cookies.get("user");
-  //       if (fallbackUser) {
-  //         try {
-  //           setUserData(JSON.parse(fallbackUser));
-  //         } catch (parseErr) {
-  //           console.error("Error parsing fallback user:", parseErr);
-  //         }
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   const handleSessionExpired = () => {
-  //     Cookies.remove("token");
-  //     Cookies.remove("refresh_token");
-  //     Cookies.remove("user");
-  //     toast.error("⚠️ Sesi Anda telah berakhir. Silakan login kembali.");
-  //     router.replace("/auth/login");
-  //   };
-
-  //   fetchUserData();
-  // }, [router]);
-
-  // useEffect(() => {
-  //   if (userData) {
-  //     console.log("User data loaded:", userData);
-  //   }
-  //   if (sessionExpired) {
-  //     alert("Sesi Anda telah habis. Silakan login kembali.");
-  //     router.push("/auth/login");
-  //   }
-  // }, [sessionExpired, router, userData]);
-
-  // function base64UrlDecode(str: string) {
-  //   const base64 = str.replace(/-/g, "+").replace(/_/g, "/"); //encoding yang URL-safe (punya karakter - atau _)
-  //   const padded = base64.padEnd(
-  //     base64.length + ((4 - (base64.length % 4)) % 4),
-  //     "="
-  //   );
-  //   return atob(padded);
-  // }
-
-  // useEffect(() => {
-  //   const token = Cookies.get("token");
-
-  //   if (!token) {
-  //     handleSessionExpired();
-  //     return;
-  //   }
-
-  //   try {
-  //     const payload = token.split(".")[1]; // ambil bagian tengah
-  //     // const decodedPayload = JSON.parse(atob(payload)); // base64 decode → JSON.parse
-  //     const decodedPayload = JSON.parse(base64UrlDecode(payload));
-
-  //     // Validasi exp (optional tapi penting)
-  //     const now = Math.floor(Date.now() / 1000);
-  //     if (decodedPayload.exp < now) {
-  //       throw new Error("Token expired");
-  //     }
-  //     console.log("Decoded payload:", decodedPayload);
-  //     setUserData(decodedPayload);
-  //     // 🔁 Cek terus setiap 30 detik
-  //     const interval = setInterval(() => {
-  //       const now = Math.floor(Date.now() / 1000);
-  //       if (decodedPayload.exp < now) {
-  //         console.warn("Token expired while idle. Logging out...");
-  //         handleSessionExpired();
-  //         clearInterval(interval);
-  //       }
-  //     }, 30 * 1000); // 30 detik
-
-  //     return () => clearInterval(interval); // Bersihkan jika unmount
-  //   } catch (err) {
-  //     console.error("Failed to decode token manually:", err);
-  //     handleSessionExpired();
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }, []);
-
-  // const handleSessionExpired = () => {
-  //   Cookies.remove("token");
-  //   Cookies.remove("refresh_token");
-  //   alert("Sesi Anda telah habis. Silakan login kembali.");
-  //   toast.error("⚠️ Sesi Anda telah berakhir. Silakan login kembali.");
-  //   router.replace("/auth/login");
-  // };
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [fetchData]);
 
   const handleLogout = useCallback(async () => {
-    setIsLoggingOut(true);
-    Cookies.remove("token");
-    Cookies.remove("user");
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    router.push("/auth/login");
+    try {
+      setIsLoggingOut(true);
+      Cookies.remove("token", { path: "/" });
+      Cookies.remove("user", { path: "/" });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      router.push("/auth/login");
+    } catch (error) {
+      console.error("Error saat logout:", error);
+    }
   }, [router]);
 
   const handleNavigation = useCallback(
@@ -312,90 +132,33 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f6fffa] flex items-center justify-center">
-        <div className="text-center">
-          <p className="flex gap-2 animate-pulse text-gray-500">
-            <RotateCw
-              size={24}
-              strokeWidth={2}
-              className={`stroke-green-600 ${loading ? "animate-spin" : ""}`}
-            />
-            <span className="dot-anim">Loading</span>
-          </p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingAnim message="Loading" />
       </div>
     );
-  }
-
-  if (isLoggingOut) {
+  } else if (isLoggingOut) {
     return (
-      <div className="min-h-screen bg-[#f6fffa] flex items-center justify-center">
-        <div className="text-center">
-          <p className="flex gap-2 animate-pulse text-gray-500">
-            <RotateCw
-              size={24}
-              strokeWidth={2}
-              className={`stroke-green-600 ${loading ? "animate-spin" : ""}`}
-            />
-            <span className="dot-anim">See you</span>
-          </p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingAnim message="See you" />
       </div>
     );
   }
 
-  // return (
-  //   <AuthGuard>
-  //   <div className="min-h-screen bg-[#f6fffa] justify-center">
-  //     <div className="flex flex-col items-center space-y-8 md:space-y-14 w-full max-w-5xl mx-auto p-4 md:p-20">
-  //       <div className="fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-2">
-  //         <div className="relative group">
-  //           <button
-  //             onClick={handleLogout}
-  //             className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-semibold rounded-lg px-3 py-2 bg-white shadow-md hover:shadow-lg transition-all duration-200"
-  //           >
-  //             <LogOut className="w-5 h-5" size={20} />
-  //           </button>
-  //           <span className="absolute right-full top-1/2 -translate-y-1/2 ml-2 mr-2 whitespace-nowrap bg-red-600 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-  //             Logout
-  //           </span>
-  //         </div>
-  //       </div>
-  //         <span className="text-center text-2x1 md:text-7xl font-bold text-black mb-4 md:mb-6">
-  //           Sistem Pemantauan dan Informasi Teknologi
-  //         </span>
-  //       <div className="text-center">
-  //         <h2 className="text-lg md:text-xl">
-  //           Welcome {"  "}
-  //           <span>{userData?.name ?? "Loading..."}</span> dari{" "}
-  //           <span>{userData?.department ?? "Loading..."}</span>!
-  //         </h2>
-  //       </div>
-  //       <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6 w-full">
-  //         {cardData.map(({ id, label, path, icon: Icon, iconColor }) => {
-  //           return (
-  //             <button
-  //               key={id}
-  //               onClick={() => {
-  //                 if (label === "Speak Your Mind") {
-  //                   openPopup();
-  //                 } else {
-  //                   handleNavigation(path);
-  //                 }
-  //               }}
-  //               className="bg-white rounded-2xl shadow-md h-28 md:h-32 flex flex-col items-center justify-center text-gray-600 text-base md:text-lg font-semibold hover:shadow-xl hover:bg-gray-50 p-4 hover:scale-105 transform transition-transform duration-200"
-  //             >
-  //               <Icon className={`w-6 h-6 md:w-8 md:h-8 mb-2 ${iconColor}`} />
-  //               {label}
-  //             </button>
-  //           );
-  //         })}
-  //       </div>
-  //     </div>
-  //     <Popup isOpen={isPopupOpen} onClose={closePopup} />
-  //   </div>
-  //   </AuthGuard>
-  // );
+  const departmentAlias: Record<string, string> = {
+    umum: "Umum",
+    hc: "HC",
+    finance: "Finance",
+    purchase: "Purchase",
+    warehouse: "Warehouse",
+    maa: "MAA",
+    qc: "QC",
+    lab: "LAB",
+    rnd: "RnD",
+    principal: "Principal",
+    marketing: "Marketing",
+    pramaterial: "Pramaterial",
+  };
+
   return (
     <AuthGuard>
       <div className="min-h-screen bg-[#f6fffa] flex flex-col items-center justify-start">
@@ -435,8 +198,8 @@ export default function Dashboard() {
         <div className="relative w-full z-10">
           <div className="absolute top-[-30px] left-1/2 transform -translate-x-1/2 w-[80%] md:w-[50%] bg-yellow-300 py-2 md:py-4 rounded-full z-0 text-center">
             <h2 className="text-black font-bold text-lg md:text-3xl">
-              Welcome {userData?.name ?? "Loading..."} dari{" "}
-              {userData?.department ?? "Loading..."}!
+              Welcome {userData?.name ?? "Loading..."} from{" "}
+              {departmentAlias[userData?.department ?? ""] ?? "Loading..."}!
             </h2>
           </div>
         </div>

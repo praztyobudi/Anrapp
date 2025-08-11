@@ -1,15 +1,31 @@
 // utils/auth.ts
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 
-export function getUserToken(): number | null {
-  const token = Cookies.get('token');
-  if (!token) return null;
+export interface UserPayload {
+  id: number;
+  name: string;
+  role: string;
+  department: string;
+}
+
+export function getToken(): string | null {
+  return Cookies.get("token") || null;
+}
+export function decodedToken(token: string): UserPayload | null {
   try {
-    const decoded: any = jwtDecode(token);
-    return  decoded.user_id ?? decoded.id ?? null; // atau decoded.id, sesuaikan isi JWT kamu
-  } catch (err) {
-    console.error('Failed to decode token', err);
+    const decoded = jwtDecode<UserPayload>(token);
+    return decoded;
+  } catch (err) { 
+    console.error("Failed to decode token", err);
     return null;
   }
+}
+
+export function getIdToken(): number | null {
+  const token = getToken();
+  if (!token) return null;
+
+  const decoded = decodedToken(token);
+  return decoded?.id ?? null;
 }
