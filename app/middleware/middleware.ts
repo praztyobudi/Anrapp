@@ -1,27 +1,37 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+const PROTECTED_ROUTES = ["/dashboard", "/admin", "/user"];
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token');
-
+  const token = request.cookies.get("token")?.value;
   const isLoggedIn = !!token;
-
   const { pathname } = request.nextUrl;
+  const isProtected = PROTECTED_ROUTES.some((p) => pathname.startsWith(p));
+  console.log("login status:", isLoggedIn);
 
-  // Redirect ke login jika belum login dan mengakses halaman yang perlu auth
-  if (!isLoggedIn && pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+  // Belum login tapi akses halaman protected -> redirect ke login
+  if (isProtected && !isLoggedIn) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/login";
+    return NextResponse.redirect(url);
   }
 
-  // Jangan boleh akses login kalau sudah login
-  if (isLoggedIn && pathname.startsWith('/auth/login')) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+  // Sudah login tapi ke halaman login -> lempar ke dashboard
+  if (isLoggedIn && pathname.startsWith("/auth/login")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/login'],
+  matcher: [
+    "/dashboard/:path*",
+    "/admin/:path*",
+    "/user/:path*",
+    "/auth/login",
+  ],
 };

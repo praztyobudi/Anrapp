@@ -1,4 +1,4 @@
-  "use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import FormKrisar from "./form-krisar";
@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { Krisar } from "./types";
 import toast from "react-hot-toast";
 import AnrLogo from "../../../img/anrlogo";
+import AuthGuard from "../../../components/auth";
 
 export default function Home() {
   const router = useRouter();
@@ -15,14 +16,6 @@ export default function Home() {
   const [selectedKrisar, setSelectedKrisar] = useState<Krisar | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const goBack = () => {
-    router.back();
-  };
-
-  useEffect(() => {
-    refreshData();
-  }, []);
 
   const addKrisar = async (
     krisar: Krisar
@@ -81,16 +74,6 @@ export default function Home() {
         await refreshData();
         return { success: true };
       }
-      // const updatedKrisar = {
-      //   ...krisarUpdate,
-      //   date: resData.data.updated_at,
-      // };
-
-      // setKrisars((prev) => {
-      //   const filtered = prev.filter((k) => k.id !== updatedKrisar.id);
-      //   return [updatedKrisar, ...filtered];
-      // });
-
       return { success: true };
     } catch (error) {
       console.error("Error updating Krisar:", error);
@@ -120,7 +103,6 @@ export default function Home() {
           }))
       );
       setStatusMsg("Updated!");
-      console.log("Data refreshed successfully");
       return { success: true };
     } catch (error) {
       console.error("Error fetching Krisar data:", error);
@@ -162,53 +144,63 @@ export default function Home() {
     }
   };
 
+  const goBack = () => {
+    router.back();
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, []);
+
   return (
-    <main className="min-h-screen bg-green-700 flex flex-col items-center px-6 py-8">
-      <div className="flex gap-4 w-full justify-between left-4">
-        <button
-          onClick={goBack}
-          className="self-start flex items-center gap-2 text-white hover:text-green-900 font-semibold"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
-        <span className="pt-1">
-          <AnrLogo />
-        </span>
-      </div>
-      <h1 className="text-5xl font-bold pt-6 text-white text-center pb-4">
-        Kritik dan saran sangat membantu
-      </h1>
+    <AuthGuard>
+      <main className="min-h-screen bg-green-700 flex flex-col items-center px-6 py-8">
+        <div className="flex gap-4 w-full justify-between left-4">
+          <button
+            onClick={goBack}
+            className="self-start flex items-center gap-2 text-white hover:text-green-900 font-semibold"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </button>
+          <span className="pt-1">
+            <AnrLogo />
+          </span>
+        </div>
+        <h1 className="text-5xl font-bold pt-6 text-white text-center pb-4">
+          Kritik dan saran sangat membantu
+        </h1>
 
-      {/* Container */}
-      <div className="flex flex-col md:flex-row md:gap-4 w-full max-w-screen-2xl">
-        {/* Form */}
-        <div className="w-full md:w-3/3">
-          <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
-            <FormKrisar
-              userId={5} // Sementara
-              onSubmit={selectedKrisar ? updateKrisar : addKrisar}
-              defaultValue={selectedKrisar ?? undefined}
-              mode={selectedKrisar ? "edit" : "create"}
-              onCancel={() => setSelectedKrisar(null)}
-            />
+        {/* Container */}
+        <div className="flex flex-col md:flex-row md:gap-4 w-full max-w-screen-2xl">
+          {/* Form */}
+          <div className="w-full md:w-3/3">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+              <FormKrisar
+                userId={5} // Sementara
+                onSubmit={selectedKrisar ? updateKrisar : addKrisar}
+                defaultValue={selectedKrisar ?? undefined}
+                mode={selectedKrisar ? "edit" : "create"}
+                onCancel={() => setSelectedKrisar(null)}
+              />
+            </div>
+          </div>
+
+          {/* List */}
+          <div className="w-full md:w-1/3">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+              <RiwayatKrisar
+                editKrisar={(krisar) => setSelectedKrisar(krisar)}
+                deleteKrisar={deleteKrisar}
+                krisars={krisars}
+                refreshData={refreshData}
+                statusMsg={statusMsg}
+              />
+            </div>
           </div>
         </div>
-
-        {/* List */}
-        <div className="w-full md:w-1/3">
-          <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
-            <RiwayatKrisar
-              editKrisar={(krisar) => setSelectedKrisar(krisar)}
-              deleteKrisar={deleteKrisar}
-              krisars={krisars}
-              refreshData={refreshData}
-              statusMsg={statusMsg}
-            />
-          </div>
-        </div>
-      </div>
-    </main>
+      </main>
+    </AuthGuard>
   );
 }

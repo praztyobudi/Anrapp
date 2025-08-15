@@ -19,6 +19,7 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -29,11 +30,12 @@ export default function LoginPage() {
       }
 
       // Simpan token di cookie dengan waktu kedaluwarsa 1 jam
-      Cookies.set("token", data.data.token, { expires: 1, path: "/" }); // 1 day
-      Cookies.set("refresh_token", data.data.refresh_token, {
-        expires: 7,
-        path: "/",
-      }); // 7 days
+      // Cookies.set("token", data.data.token, { expires: 1, path: "/" }); // 1 day
+      // Cookies.set("token", data.data.token, { path: "/", sameSite: "Strict" });
+      // Cookies.set("refresh_token", data.data.refresh_token, {
+      //   expires: 7,
+      //   path: "/",
+      // }); // 7 days
       Cookies.set("user", JSON.stringify(data.data), { path: "/" }); // Optional, untuk fallback di frontend
 
       router.push("/dashboard");

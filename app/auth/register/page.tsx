@@ -101,7 +101,7 @@ export default function RegisterPage() {
               <option value="warehouse">Warehouse</option>
               <option value="maa">MAA</option>
               <option value="qc">QC</option>
-              <option value="lab">LAB</option>
+              <option value="lab">LAB</option>  
               <option value="rnd">RnD</option>
               <option value="principal">Principal</option>
               <option value="marketing">Marketing</option>

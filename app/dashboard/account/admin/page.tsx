@@ -119,11 +119,20 @@ export default function AdminPage() {
   if (users.length === 0 && !loading) {
     return <div className="text-gray-600 text-center">Tidak ada data</div>;
   }
-  if (loading)
+  if (error) {
     return (
-      <div className="text-gray-600 dot-anim text-center">⏳ Loading data</div>
+      <div className="text-center space-y-8 py-6 items-center">
+        <div className="text-red-600">❌ {error}</div>
+        <button
+          onClick={() => window.history.back()}
+          className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded"
+        >
+          Back
+        </button>
+      </div>
     );
-  if (error) return <div className="text-red-600 text-center">❌ {error}</div>;
+  }
+
   const headers = [
     "No",
     "NP",
@@ -147,7 +156,7 @@ export default function AdminPage() {
         selectedUser={selectedUser}
         onSubmit={(data) => updateHandler(selectedUser?.id || 0, data)}
       />
-      <div className="bg-white rounded-lg shadow-md max-h-[500px] w-full max-w-7xl 2xl:max-w-[90rem] mx-auto overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-md max-h-screen sm:max-h-screen w-full max-w-screen mx-auto overflow-y-auto">
         <div className="p-4">
           <div className="relative w-full sm:max-w-sm md:max-w-md 2xl:max-w-lg">
             {/* 🔍 Icon Search */}
@@ -173,7 +182,7 @@ export default function AdminPage() {
             )}
           </div>
         </div>
-        <div className="overflow-y-auto max-h-[400px] 2xl:max-h-[400px]">
+        <div className="overflow-y-auto max-h-[400px] 2xl:max-h-[800px]">
           {/* Tabel untuk layar besar */}
           <table className="min-w-full divide-y divide-gray-200 text-sm text-gray-800 hidden sm:table">
             <thead className="bg-green-700 text-white sticky top-0 z-10">
