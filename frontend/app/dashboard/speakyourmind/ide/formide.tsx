@@ -121,11 +121,18 @@ propsFormIde) {
                 <option value="" disabled hidden>
                   Department
                 </option>
-                <option value="manager">Manager</option>
-                <option value="staff">Staff</option>
-                <option value="operator">Operator</option>
-                <option value="marketing">Marketing</option>
-                <option value="hc">HC</option>
+                <option value="umum">Umum</option>
+              <option value="hc">HC</option>
+              <option value="finance">Finance</option>
+              <option value="purchase">Purchase</option>
+              <option value="warehouse">Warehouse</option>
+              <option value="maa">MAA</option>
+              <option value="qc">QC</option>
+              <option value="lab">LAB</option>  
+              <option value="rnd">RnD</option>
+              <option value="principal">Principal</option>
+              <option value="marketing">Marketing</option>
+              <option value="pramaterial">Pramaterial</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>

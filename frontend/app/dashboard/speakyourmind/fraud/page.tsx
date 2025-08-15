@@ -43,7 +43,6 @@ export default function Home() {
 
       setFrauds(sorted);
       setStatusMsg("Updated!");
-      console.log("Data refreshed successfully");
       // return { success: true };
     } catch (error) {
       const errMsg =

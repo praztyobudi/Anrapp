@@ -80,3 +80,20 @@ export const deleteUser = async (req, res) => {
     return errorResponse(res, error.message);
   }
 };
+
+export const me = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await userService.getProfile(userId);
+    if (!user) {
+      return errorResponse(res, "User not found", 404);
+    }
+
+    // Exclude password from the response
+    const { password, ...userProfile } = user;
+
+    return successResponse(res, "User profile retrieved successfully", userProfile);
+  } catch (error) {
+    return errorResponse(res, error.message);
+  }
+}

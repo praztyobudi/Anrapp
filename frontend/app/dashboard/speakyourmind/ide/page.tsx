@@ -8,6 +8,7 @@ import { ArrowLeft } from "lucide-react";
 import { Idea } from "./types";
 import AnrLogo from "../../../img/anrlogo";
 import AuthGuard from "../../../components/auth";
+import { me } from "../../../libs/users/api";
 
 export default function Home(p0: unknown) {
   const router = useRouter();
@@ -95,25 +96,19 @@ export default function Home(p0: unknown) {
     try {
       const res = await fetch("https://app.prazelab.my.id/api/ide");
       if (!res.ok) throw new Error("Fetch failed");
-
       const result = await res.json();
-      // const data = Array.isArray(result.data) ? result.data : [result.data];
-
-      // const mappedIdeas: Idea[] = data.map((item: any) => ({
-      //   id: item?.id ?? 0,
-      //   from: item?.name ?? "Anonim",
-      //   to: item?.department ?? "Tidak diketahui",
-      //   idea: item?.message ?? "",
-      //   date: item?.updated_at ?? "",
-      // }));
-
-      setIdeas(result.data.map((item: any) => ({
-        id: item?.id ?? 0,
-        from: item?.name ?? "Anonim",
-        to: item?.department ?? "Tidak diketahui",
-        idea: item?.message ?? "",
-        date: item?.updated_at ?? "",
-      })));
+      console.log("Isi ideas:", result.data);
+      const cekRole = await me();
+      if (cekRole.data.role === "admin") {
+        console.log("Cek role admin:", cekRole.data.role + " - " + cekRole.data.name);
+        setIdeas(result.data.map((item: any) => ({
+          id: item?.id ?? 0,
+          from: item?.name ?? "Anonim",
+          to: item?.department ?? "Tidak diketahui",
+          idea: item?.message ?? "",
+          date: item?.updated_at ?? "",
+        })))
+      };
       setStatusMsg("Updated!");
     } catch (error) {
       console.error("Gagal refresh data:", error);
@@ -136,47 +131,47 @@ export default function Home(p0: unknown) {
 
   return (
     <AuthGuard>
-    <main className="min-h-screen bg-green-700 flex flex-col items-center px-6 py-8">
-      <div className="flex gap-4 w-full justify-between left-4">
-        <button
-          onClick={goBack}
-          className="self-start flex items-center gap-2 text-white hover:text-green-900 font-semibold"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
-        <span className="pt-1">
-          <AnrLogo />
-        </span>
-      </div>
-      <h1 className="text-5xl font-bold pt-6 text-white text-center">
-        Ide kreatifmu, semangat kita semua!
-      </h1>
-      <div className="flex flex-col md:flex-row gap-6 w-full max-w-screen-2xl pt-4">
-        <div className="w-full md:w-3/3">
-          <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
-            <FormIde
-              onSubmit={selectedIdea ? updateIdea : addIdea}
-              defaultValue={selectedIdea ?? undefined}
-              mode={selectedIdea ? "edit" : "create"}
-              onCancel={handleCancelEdit}
-            />
+      <main className="min-h-screen bg-green-700 flex flex-col items-center px-6 py-8">
+        <div className="flex gap-4 w-full justify-between left-4">
+          <button
+            onClick={goBack}
+            className="self-start flex items-center gap-2 text-white hover:text-green-900 font-semibold"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back
+          </button>
+          <span className="pt-1">
+            <AnrLogo />
+          </span>
+        </div>
+        <h1 className="text-5xl font-bold pt-6 text-white text-center">
+          Ide kreatifmu, semangat kita semua!
+        </h1>
+        <div className="flex flex-col md:flex-row gap-6 w-full max-w-screen-2xl pt-4">
+          <div className="w-full md:w-3/3">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+              <FormIde
+                onSubmit={selectedIdea ? updateIdea : addIdea}
+                defaultValue={selectedIdea ?? undefined}
+                mode={selectedIdea ? "edit" : "create"}
+                onCancel={handleCancelEdit}
+              />
+            </div>
+          </div>
+          <div className="w-full md:w-1/3">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+              <ListIde
+                onEdit={setSelectedIdea}
+                ideas={ideas}
+                setIdeas={setIdeas}
+                refreshData={refreshData}
+                statusMsg={statusMsg}
+              />
+            </div>
           </div>
         </div>
-        <div className="w-full md:w-1/3">
-          <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
-            <ListIde
-              onEdit={setSelectedIdea}
-              ideas={ideas}
-              setIdeas={setIdeas}
-              refreshData={refreshData}
-              statusMsg={statusMsg}
-            />
-          </div>
-        </div>
-      </div>
-    </main>
+      </main>
     </AuthGuard>
   );
 }

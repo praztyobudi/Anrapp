@@ -44,3 +44,13 @@ export const updateUser = async (id: number, data: any) => {
   if (!res.ok) throw new Error("Username already exists");
   return res.json();
 };
+
+export const me = async () => {
+  const res = await fetch("https://app.prazelab.my.id/api/me", {
+    method: "GET",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Failed to fetch user data");
+  return res.json();
+}

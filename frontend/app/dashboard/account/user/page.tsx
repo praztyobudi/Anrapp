@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { getUserById, updateUser } from "../../../libs/users/api";
+import { getUserById, me, updateUser } from "../../../libs/users/api";
 import { User } from "../types";
 import toast, { Toaster } from "react-hot-toast";
 import { getIdToken } from "../../../utils/jwtdecode";
@@ -31,9 +31,8 @@ export default function UserPage() {
   // ✅ Ambil data user saat page load
   useEffect(() => {
     const ambilData = async () => {
-      const userId = getIdToken();
+      const userId = await me();
       if (!userId) {
-        router.push("/auth/login");
         setLoading(false);
         return;
       }
@@ -41,7 +40,7 @@ export default function UserPage() {
       try {
         setLoading(true);
         const response: { status: string; message: string; data: User } =
-          await getUserById(userId);
+          await getUserById(userId.data.id);
 
         const data = response.data;
 
@@ -77,15 +76,15 @@ export default function UserPage() {
   // ✅ Handle submit data
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const userId = getIdToken();
-    if (!userId) {
+    const userId = await me();
+    if (!userId.data.id) {
       toast.error("User ID tidak ditemukan di token");
       return;
     }
 
     try {
       setLoading(true);
-      await updateUser(userId, {
+      await updateUser(userId.data.id, {
         ...formData,
       });
       toast.success("Data user berhasil diperbarui");
@@ -107,7 +106,7 @@ export default function UserPage() {
   if (loading)
     return (
       <div className="min-h-1.5">
-        <LoadingAnim message="Loading" />;
+        <LoadingAnim message="Loading" />
       </div>
     );
   if (error) return <p className="p-4 text-red-500">{error}</p>;

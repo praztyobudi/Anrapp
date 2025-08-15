@@ -12,6 +12,7 @@ export interface UserPayload {
 export function getToken(): string | null {
   return Cookies.get("token") || null;
 }
+
 export function decodedToken(token: string): UserPayload | null {
   try {
     const decoded = jwtDecode<UserPayload>(token);

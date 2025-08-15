@@ -35,6 +35,21 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/account/layout.js"
+    ],
+    "/dashboard/speakyourmind/ide/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/speakyourmind/ide/page.js"
+    ],
+    "/dashboard/speakyourmind/fraud/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/speakyourmind/fraud/page.js"
+    ],
+    "/dashboard/speakyourmind/kritiksaran/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/speakyourmind/kritiksaran/page.js"
     ]
   }
 }
