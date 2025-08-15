@@ -32,7 +32,7 @@ export const authenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    return errorResponse(res, 'Invalid or expired token', 403);
+    return errorResponse(res, 'Invalid or expired token', 401);
   }
 };
 
@@ -45,7 +45,7 @@ export const authRoles = (...allowedRoles) => {
     }
 
     if (!allowedRoles.includes(authRole)) {
-      return errorResponse(res, 'Access denied', 403);
+      return errorResponse(res, 'Access denied', 401);
     }
 
     next();

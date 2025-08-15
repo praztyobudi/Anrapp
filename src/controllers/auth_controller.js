@@ -17,7 +17,7 @@ export const login = async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None", // Wajib kalau frontend beda origin
-        maxAge: 24 * 60 * 60 * 1000, // 1 hari
+        // maxAge: 24 * 60 * 60 * 1000, // 1 hari
       })
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -52,7 +52,10 @@ export const logout = async (req, res) => {
     // await redisClient.del(`refresh_token:${userId}`);
     // console.log('User logged out:', username + ' success, at ' + new Date().toLocaleDateString());
     const deleted = await redisClient.del(`refresh_token:${userId}`);
-    console.log(`Refresh_token user ${username} [${deleted ? '✅ removed' : '❌ not found'}] at ${new Date().toISOString()}`);
+    // console.log(`Refresh_token user ${username} [${deleted ? '✅ removed' : '❌ not found'}] at ${new Date().toISOString()}`);
+    res
+      .clearCookie("accessToken", { httpOnly: true, secure: true, sameSite: "None" })
+      .clearCookie("refreshToken", { httpOnly: true, secure: true, sameSite: "None" });
     return successResponse(res, 'Logout successful');
   } catch (error) {
     return errorResponse(res, error.message, 500);
@@ -84,6 +87,8 @@ export const refreshToken = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || "15m" }
     );
+
+    await redisClient.set(`refresh_token:${decoded.id}`, newToken, 'EX', 7 * 24 * 60 * 60);
 
     // Kirim token baru lewat cookie
     res.cookie("accessToken", newToken, {

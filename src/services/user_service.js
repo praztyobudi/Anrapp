@@ -60,5 +60,17 @@ export class UserService {
     const { password, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
+
+  async getProfile(id) {
+    const user = await userRepo.getUserById(id);
+    if (!user) throw new Error('User not found');
+    return {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      department: user.department,
+      role: user.role,
+    };
+  }
 }
 export const userService = new UserService();
