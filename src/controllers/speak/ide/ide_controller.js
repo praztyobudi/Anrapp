@@ -3,7 +3,9 @@ import ideService from '../../../services/speak/ide/ide_service.js';
 
 export const getAllIde = async (req, res) => {
     try {
-        const data = await ideService.findAllIde();
+        const userId = req.user?.id;
+        const userRole = req.user?.role;
+        const data = await ideService.findAllIde(userId, userRole);
         return successResponse(res, 'Success get all ideas', data);
     } catch (error) {
         console.error('Error in getAllIde:', error);
@@ -13,7 +15,9 @@ export const getAllIde = async (req, res) => {
 export const getIdeById = async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await ideService.findIdeById(id);
+        const userId = req.user?.id;
+        const userRole = req.user?.role;
+        const result = await ideService.findIdeById(id, userRole, userId);
         if (!result) {
             return errorResponse(res, 'Idea not found', null, 404);
         }
@@ -26,12 +30,13 @@ export const getIdeById = async (req, res) => {
 export const createIde = async (req, res) => {
     try {
         const { name, message, department } = req.body;
-
-        if (!name || !message || !department) {
+        const user_id = req.user?.id;
+        console.log("user_id", user_id);
+        if (!user_id || !name || !message || !department) {
             return errorResponse(res, 'Missing required fields');
         }
 
-        const result = await ideService.createIde({ name, message, department });
+        const result = await ideService.createIde({ user_id, name, message, department });
         return successResponse(res, 'Idea created successfully', result, 201);
     } catch (error) {
         console.error('Error in createIde:', error);

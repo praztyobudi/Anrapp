@@ -2,29 +2,55 @@ import { query } from "../../../config/db.js";
 // import { getAllKrisar, getKrisarById } from "../../../controllers/speak/krisar/krisar_controller.js";
 
 export const krisarRepo = {
-    getAllKrisar: async () => {
-        const sql = `SELECT 
-            id,
-            user_id, 
-            critique, 
-            suggestion,
-            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-            FROM tb_kritiksaran;`;
-        const result = await query(sql);
-        return result.rows;
+    getAllKrisar: async (userId, userRole) => {
+        if (userRole === 'admin') {
+            const sql = `SELECT 
+                id,
+                user_id, 
+                critique, 
+                suggestion,
+                created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+                updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+                FROM tb_kritiksaran;`;
+            const result = await query(sql);
+            return result.rows;
+        } else {
+            const sql = `SELECT 
+                id,
+                user_id, 
+                critique, 
+                suggestion,
+                created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+                updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+                FROM tb_kritiksaran WHERE user_id = $1;`;
+            const result = await query(sql, [userId]);
+            return result.rows;
+        }
     },
-    getKrisarById: async (id) => {
-        const sql = `SELECT
-            id, 
-            user_id, 
-            critique, 
-            suggestion,
-            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-            FROM tb_kritiksaran WHERE id = $1;`;
-        const result = await query(sql, [id]);
-        return result.rows[0];
+    getKrisarById: async (id, userId, userRole) => {
+       if (userRole === 'admin') {
+         const sql = `SELECT
+             id, 
+             user_id, 
+             critique, 
+             suggestion,
+             created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+             updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+             FROM tb_kritiksaran WHERE id = $1;`;
+         const result = await query(sql, [id]);
+         return result.rows[0];
+       } else {
+         const sql = `SELECT
+             id, 
+             user_id, 
+             critique, 
+             suggestion,
+             created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+             updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+             FROM tb_kritiksaran WHERE id = $1 AND user_id = $2;`;
+         const result = await query(sql, [id, userId]);
+         return result.rows[0];
+       }
     },
     createKrisar: async ({ user_id, critique, suggestion }) => {
         const sql = `INSERT INTO tb_kritiksaran (user_id, critique, suggestion)

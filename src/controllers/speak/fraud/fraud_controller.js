@@ -6,7 +6,9 @@ import FraudService from "../../../services/speak/fraud/fraud_service.js";
 
 export const getAllFraud = async (req, res) => {
   try {
-    const data = await FraudService.findAllFraud();
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const data = await FraudService.findAllFraud(userId, userRole);
     return successResponse(res, "Success get all fraud reports", data);
   } catch (error) {
     console.error("Error in getAllFraud:", error);
@@ -16,7 +18,9 @@ export const getAllFraud = async (req, res) => {
 export const getFraudById = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await FraudService.findFraudById(id);
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const result = await FraudService.findFraudById(id, userId, userRole);
     if (!result) {
       return errorResponse(res, "Fraud report not found", null, 404);
     }

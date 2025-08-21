@@ -1,11 +1,11 @@
 import * as krisarRepo from '../../../repo/speak/krisar/krisar_repo.js';
 
 class KrisarService {
-    async findAllKrisar() {
-        return await krisarRepo.krisarRepo.getAllKrisar();
+    async findAllKrisar(userId, userRole) {
+        return await krisarRepo.krisarRepo.getAllKrisar(userId, userRole);
     }
-    async findKrisarById(id) {
-        return await krisarRepo.krisarRepo.getKrisarById(id);
+    async findKrisarById(id, userId, userRole) {
+        return await krisarRepo.krisarRepo.getKrisarById(id, userId, userRole);
     }
     async createKrisar(data) {
         const { user_id, critique, suggestion } = data;

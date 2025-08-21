@@ -1,21 +1,15 @@
-import * as fraudRepo from "../../../repo/speak/fraud/fraud_repo.js";
+  import * as fraudRepo from "../../../repo/speak/fraud/fraud_repo.js";
 
 class FraudService {
-  async findAllFraud() {
-    return await fraudRepo.fraudRepo.getAllFraud();
+  async findAllFraud(userId, userRole) {
+    return await fraudRepo.fraudRepo.getAllFraud(userId, userRole);
   }
 
-  async findFraudById(id) {
-    return await fraudRepo.fraudRepo.getFraudById(id);
+  async findFraudById(id, userId, userRole) {
+    return await fraudRepo.fraudRepo.getFraudById(id, userId, userRole);
   }
 
   async createFraud(data) {
-    const { user_id, fraud_message, types } = data;
-    if (!user_id || !fraud_message || !types) {
-      throw new Error(
-        "Missing required fields: user_id, fraud_type, description"
-      );
-    }
     return await fraudRepo.fraudRepo.createFraud(data);
   }
 

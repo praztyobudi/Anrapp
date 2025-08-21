@@ -10,8 +10,8 @@ import { authenticateToken } from "../middleware/auth_middleware.js";
 
 const router = Router();
 // Fraud routes
-router.get("/fraud", getAllFraud);
-router.get("/fraud/:id", getFraudById);
+router.get("/fraud", authenticateToken, getAllFraud);
+router.get("/fraud/:id", authenticateToken, getFraudById);
 router.post("/fraud", authenticateToken, createFraud);
 router.put('/fraud/:id', updateFraud);
 router.delete('/fraud/:id', deleteFraud);

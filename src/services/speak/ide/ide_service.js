@@ -2,11 +2,11 @@ import * as fromIdeRepo from '../../../repo/speak/ide/ide_repo.js';
 import { getDepartmentName } from '../../../helper/find_data.js';
 
 class IdeService {
-    async findAllIde() {
-        return await fromIdeRepo.ideRepo.getAllIde();
+    async findAllIde(userId, userRole) {
+        return await fromIdeRepo.ideRepo.getAllIde(userId, userRole);
     }
-    async findIdeById(id) {
-        const ide = await fromIdeRepo.ideRepo.getIdeById(id);
+    async findIdeById(id, userRole, userId) {
+        const ide = await fromIdeRepo.ideRepo.getIdeById(id, userRole, userId);
         if (!ide) throw new Error('Idea not found');
         return ide;
     }
