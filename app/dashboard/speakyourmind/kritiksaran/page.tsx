@@ -5,13 +5,15 @@ import FormKrisar from "./form-krisar";
 import RiwayatKrisar from "./riwayat-krisar";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { Krisar } from "./types";
+import { Krisar, userData } from "./types";
 import toast from "react-hot-toast";
 import AnrLogo from "../../../img/anrlogo";
 import AuthGuard from "../../../components/auth";
+import { getUsers, me } from "../../../libs/users/api";
 
 export default function Home() {
   const router = useRouter();
+  const [userData, setUserData] = useState<string | null>(null);
   const [krisars, setKrisars] = useState<Krisar[]>([]);
   const [selectedKrisar, setSelectedKrisar] = useState<Krisar | null>(null);
   const [statusMsg, setStatusMsg] = useState("");
@@ -21,6 +23,15 @@ export default function Home() {
     krisar: Krisar
   ): Promise<{ success: boolean; error?: Error }> => {
     try {
+      const currentUser = await me();
+      const isAdmin = currentUser.data.role === "admin";
+      let userName: string;
+
+      if (isAdmin) {
+        userName = currentUser.data.name;
+      } else {
+        userName = "I'm Anonymous";
+      }
       const response = await fetch("https://app.prazelab.my.id/api/krisar", {
         method: "POST",
         headers: {
@@ -39,7 +50,12 @@ export default function Home() {
 
       // setKrisars([krisar, ...krisars]);
       const result = await response.json();
-      setKrisars((prev) => [result.data, ...prev]);
+      const newKrisar = {
+        ...result.data,
+        user_name: userName,
+      };
+      // setKrisars((prev) => [result.data, ...prev]);
+      setKrisars((prev) => [newKrisar, ...prev]);
       console.log("Success add:", result);
       return { success: true };
     } catch (error) {
@@ -86,6 +102,20 @@ export default function Home() {
     try {
       const response = await fetch("https://app.prazelab.my.id/api/krisar");
       const result = await response.json();
+      const userdata = await me();
+      let usersMap: { [key: number]: string } = {};
+      if (userdata.data.role === "admin") {
+        const usersResponse = await getUsers();
+        const users = usersResponse.data;
+        // Buat peta user_id ke nama pengguna
+        usersMap = users.reduce((map: { [key: number]: string }, user: userData) => {
+          map[user.id] = "From : " + user.name;
+          return map;
+        }, {});
+        // setUserData(userId.data[0].name);
+      } else {
+        usersMap[userdata.data.id] = "I'm Anonymous";
+      }
       setKrisars(
         result.data
           .sort(
@@ -100,8 +130,11 @@ export default function Home() {
             suggestion: item.suggestion,
             created_at: item.created_at,
             updated_at: item.updated_at,
+            user_name: usersMap[item.user_id] || "Unknown User",
           }))
       );
+      // Set userData untuk pengguna yang login
+      setUserData(userdata.data.role === "admin" ? userdata.data.name : "I'm Anonymous");
       setStatusMsg("Updated!");
       return { success: true };
     } catch (error) {
@@ -168,7 +201,7 @@ export default function Home() {
             <AnrLogo />
           </span>
         </div>
-        <h1 className="text-5xl font-bold pt-6 text-white text-center pb-4">
+        <h1 className="text-3xl font-bold pb-6 text-white text-center">
           Kritik dan saran sangat membantu
         </h1>
 
@@ -176,7 +209,7 @@ export default function Home() {
         <div className="flex flex-col md:flex-row md:gap-4 w-full max-w-screen-2xl">
           {/* Form */}
           <div className="w-full md:w-3/3">
-            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col">
               <FormKrisar
                 userId={5} // Sementara
                 onSubmit={selectedKrisar ? updateKrisar : addKrisar}
@@ -189,8 +222,9 @@ export default function Home() {
 
           {/* List */}
           <div className="w-full md:w-1/3">
-            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col">
               <RiwayatKrisar
+                userData={userData}
                 editKrisar={(krisar) => setSelectedKrisar(krisar)}
                 deleteKrisar={deleteKrisar}
                 krisars={krisars}

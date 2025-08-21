@@ -10,28 +10,6 @@ export default function RiwayatKrisar({
   deleteKrisar,
 }: propsRiwayatKrisar) {
   const [loading, setLoading] = useState(false);
-
-  // const isNew = (created_at: string) => {
-  //   const created = new Date(created_at);
-  //   const now = new Date();
-  //   const diffSeconds = (now.getTime() - created.getTime()) / 1000;
-  //   return diffSeconds < 60; // Jika kurang dari angka detik dianggap baru
-  // };
-
-  // const isEdited = (
-  //   created_at: string,
-  //   updated_at: string,
-  //   maxAgeInSeconds: number = 60
-  // ) => {
-  //   const created = new Date(created_at);
-  //   const updated = new Date(updated_at);
-  //   const now = new Date();
-
-  //   const isActuallyEdited = created.getTime() !== updated.getTime();
-  //   const diffSeconds = (now.getTime() - updated.getTime()) / 1000;
-
-  //   return isActuallyEdited && diffSeconds < maxAgeInSeconds;
-  // };
   const isNew = (created_at: string, maxAgeInSeconds: number = 60) => {
     const created = new Date(created_at);
     const now = new Date();
@@ -119,7 +97,7 @@ export default function RiwayatKrisar({
               >
                 <div className="flex justify-between items-center">
                   <div className="font-semibold text-gray-700 text-sm">
-                    I'am Anonymous
+                    {item.user_name}
                     {isNew(item.created_at) && (
                       <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 rounded text-[12px]">
                         New !

@@ -9,18 +9,6 @@ import { UserDetailModal } from "./modal/view";
 import FormEditModal from "./modal/edit";
 import { User } from "../types";
 
-// type User = {
-//   id: number;
-//   np: string;
-//   username: string;
-//   name: string;
-//   department: string;
-//   role: string;
-//   location?: string;
-//   last_login?: string;
-//   last_device?: string;
-// };
-
 export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -29,7 +17,7 @@ export default function AdminPage() {
   const [filter, setFilter] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-
+  
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -156,8 +144,9 @@ export default function AdminPage() {
         selectedUser={selectedUser}
         onSubmit={(data) => updateHandler(selectedUser?.id || 0, data)}
       />
-      <div className="bg-white rounded-lg shadow-md max-h-screen sm:max-h-screen w-full max-w-screen mx-auto overflow-y-auto">
-        <div className="p-4">
+      <div className="bg-white rounded-lg shadow-md flex flex-col h-screen">
+        {/* Bagian Pencarian */}
+        <div className="p-4 flex-shrink-0">
           <div className="relative w-full sm:max-w-sm md:max-w-md 2xl:max-w-lg">
             {/* 🔍 Icon Search */}
             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -182,7 +171,9 @@ export default function AdminPage() {
             )}
           </div>
         </div>
-        <div className="overflow-y-auto max-h-[400px] 2xl:max-h-[800px]">
+
+        {/* Bagian Konten dengan Scroll */}
+        <div className="flex-1 overflow-y-auto">
           {/* Tabel untuk layar besar */}
           <table className="min-w-full divide-y divide-gray-200 text-sm text-gray-800 hidden sm:table">
             <thead className="bg-green-700 text-white sticky top-0 z-10">

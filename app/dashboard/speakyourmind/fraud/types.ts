@@ -6,12 +6,18 @@ export type Fraud = {
   type_message: string;
   created_at: string;
   updated_at: string;
+  userData: string | null;
 };
 
 export type FraudReq = {
   id?: number;
   fraud_message: string;
   types: string;
+};
+
+export type userData = {
+  id: number;
+  name: string;
 };
 
 export type propsFormFraud = {
@@ -24,6 +30,7 @@ export type propsFormFraud = {
 };
 
 export type propsRiwayatFraud = {
+  
   frauds: Fraud[];
   editFraud: (fraud: Fraud) => void;
   deleteFraud: (id: number) => void;

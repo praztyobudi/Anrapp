@@ -5,6 +5,7 @@ import { propsRiwayatFraud } from "./types";
 import { useState } from "react";
 
 export default function RiwayatFraud({
+  // userData,
   frauds,
   editFraud,
   deleteFraud,
@@ -111,7 +112,7 @@ export default function RiwayatFraud({
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="font-bold text-gray-700">
-                          I'am Anonymous
+                          {fraud.userData}
                           {isNew(fraud.created_at) && (
                             <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 rounded text-[12px]">
                               New !
@@ -125,7 +126,7 @@ export default function RiwayatFraud({
                             )}
                         </p>
                         <p className="text-gray-600 text-sm font-semibold">
-                          {fraud.type_message}
+                          Issue : {fraud.type_message}
                         </p>
                       </div>
                       <div className="flex flex-col items-end">
