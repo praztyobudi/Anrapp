@@ -128,11 +128,11 @@ export default function Home(p0: unknown) {
 
   return (
     <AuthGuard>
-      <main className="min-h-screen bg-green-700 flex flex-col items-center px-6 py-8">
-        <div className="flex gap-4 w-full justify-between left-4">
+      <main className="min-h-screen bg-green-700 flex flex-col items-center px-6">
+        <div className="flex w-full items-center justify-between">
           <button
             onClick={goBack}
-            className="self-start flex items-center gap-2 text-white hover:text-green-900 font-semibold"
+            className="flex items-center gap-2 text-white hover:text-green-900 font-semibold"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />

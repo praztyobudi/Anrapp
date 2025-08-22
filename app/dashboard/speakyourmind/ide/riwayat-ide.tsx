@@ -39,12 +39,12 @@ export default function ListIde({
 
   // Jika tidak loading dan data kosong -> mulai hitung
   const emptyArmed = !loading && (ideas?.length ?? 0) === 0;
-  const showEmpty = useDelayedFlag(emptyArmed, 8000); // 8 detik
+  const showEmpty = useDelayedFlag(emptyArmed, 1000); //  detik
 
   return (
     <>
       <Toaster position="top-right" reverseOrder={true} />
-      <div className="flex flex-col gap-4 max-h-[465px]">
+      <div className="flex flex-col gap-4 h-[465px]">
         <div className="flex items-center justify-between sticky top-0 bg-white z-10">
           {/* Kiri */}
           <div className="font-bold text-sm md:text-base text-gray-600">
@@ -89,7 +89,7 @@ export default function ListIde({
           ) : (ideas?.length ?? 0) === 0 ? (
             showEmpty ? (
               <div className="text-center text-gray-500 text-sm" aria-live="polite">
-                <p>Data not found</p>
+                <p>Sorry, no data!</p>
               </div>
             ) : (
               <div className="text-center text-gray-500 text-sm" aria-live="polite">

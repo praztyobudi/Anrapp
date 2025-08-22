@@ -191,11 +191,11 @@ export default function Home() {
 
   return (
     <AuthGuard>
-      <main className="min-h-screen bg-red-500 flex flex-col items-center px-6 py-10">
-        <div className="flex gap-4 w-full justify-between left-4">
+      <main className="min-h-screen bg-red-500 flex flex-col items-center px-6">
+        <div className="flex w-full items-center justify-between">
           <button
             onClick={goBack}
-            className="self-start flex items-center gap-2 text-white hover:text-red-900 font-semibold"
+            className="flex items-center gap-2 text-white hover:text-red-900 font-semibold"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -205,7 +205,7 @@ export default function Home() {
             <AnrLogo />
           </span>
         </div>
-        <h1 className="text-xl md:text-3xl font-bold text-white md:mb-8 mt-8 text-center gap-2 flex items-center justify-center">
+        <h1 className="text-xl md:text-3xl font-bold text-white md:mb-8 mt-0 text-center gap-2 flex items-center justify-center">
           <ShieldAlert className="h-6 md:w-10 md:h-10" />
           Pelaporan Indikasi Fraud
         </h1>
@@ -213,7 +213,7 @@ export default function Home() {
         {/* Container */}
         <div className="flex flex-col md:flex-row md:gap-4 w-full max-w-screen-2xl">
           {/* Form */}
-          <div className="w-full md:w-3/3">
+          <div className="w-full md:w-3/3 py-4 md:py-0">
             <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col">
               <div>
                 <FormFraud

@@ -1,6 +1,7 @@
 import { Eye, RefreshCw, RotateCw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { propsRiwayatKrisar } from "./types";
+import useDelayedFlag from "../../../components/loading-time";
 
 export default function RiwayatKrisar({
   refreshData,
@@ -43,6 +44,9 @@ export default function RiwayatKrisar({
     refreshData().finally(() => setLoading(false));
   };
 
+  const emptyArmed = !loading && (krisars?.length ?? 0) === 0;
+  const showEmpty = useDelayedFlag(emptyArmed, 1000); // detik
+
   return (
     <>
       <div className="flex flex-col gap-4 h-[460px]">
@@ -62,9 +66,8 @@ export default function RiwayatKrisar({
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className={`text-gray-500 ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`text-gray-500 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               title="Refresh"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
@@ -82,13 +85,17 @@ export default function RiwayatKrisar({
                 <RotateCw size={16} className={loading ? "animate-spin" : ""} />
               </div>
             </div>
-          ) : krisars.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-gray-500 text-sm">
-                {" "}
-                <span>Sorry, no data!</span>
+          ) : (krisars?.length ?? 0) === 0 ? (
+            showEmpty ? (
+              <div className="text-center text-gray-500 text-sm" aria-live="polite">
+                <p>Sorry, no data!</p>
               </div>
-            </div>
+            ) : (
+              <div className="text-center text-gray-500 text-sm" aria-live="polite">
+                <span>Wait a moment</span>
+                <span className="dot-anim ml-1 inline-block">.</span>
+              </div>
+            )
           ) : (
             krisars.map((item) => (
               <div

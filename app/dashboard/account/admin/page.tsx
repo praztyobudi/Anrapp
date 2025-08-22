@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { deleteUser, getUsers, updateUser } from "../../../libs/users/api";
 import { locationDept } from "../../../utils/locationdept";
-import { Eye, Search, SquarePen, Trash2, X } from "lucide-react";
+import { Building2, Eye, Factory, Search, SquarePen, Trash2, UserRound, Users, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { UserDetailModal } from "./modal/view";
 import FormEditModal from "./modal/edit";
 import { User } from "../types";
+
+
 
 export default function AdminPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -17,7 +19,7 @@ export default function AdminPage() {
   const [filter, setFilter] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -130,6 +132,15 @@ export default function AdminPage() {
     "Location",
     "Action",
   ];
+
+  const ho = users.filter(user => user.location === "Head Office").length;
+  const pabrik = users.filter(user => user.location === "Pabrik").length;
+  const items = [
+    { icon: UserRound, label: "Users", count: users.length, colorIcon: "text-blue-600" },
+    { icon: Building2, label: "Head Office", count: ho, colorIcon: "text-green-600" },
+    { icon: Factory, label: "Factory", count: pabrik, colorIcon: "text-red-600" },
+  ];
+
   return (
     <>
       <Toaster position="top-right" reverseOrder={true} />
@@ -145,30 +156,48 @@ export default function AdminPage() {
         onSubmit={(data) => updateHandler(selectedUser?.id || 0, data)}
       />
       <div className="bg-white rounded-lg shadow-md flex flex-col h-screen">
-        {/* Bagian Pencarian */}
-        <div className="p-4 flex-shrink-0">
-          <div className="relative w-full sm:max-w-sm md:max-w-md 2xl:max-w-lg">
-            {/* 🔍 Icon Search */}
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-              <Search size={16} />
-            </span>
-            <input
-              type="text"
-              placeholder="Search"
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="pl-10 pr-10 py-3 border border-gray-300 rounded w-full hover:border-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent text-sm sm:text-base"
-            />
-            {/* ❌ Icon Clear */}
-            {filter && (
-              <button
-                type="button"
-                onClick={() => setFilter("")}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none"
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between p-3 border-b border-gray-200 px-3 md:px-6">
+          {/* Input Search */}
+          <div className="w-full sm:max-w-md">
+            <div className="relative flex items-center">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                <Search size={16} />
+              </span>
+              <input
+                type="text"
+                placeholder="Search"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded hover:border-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:border-transparent text-sm"
+              />
+              {filter && (
+                <button
+                  type="button"
+                  onClick={() => setFilter("")}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-red-500 focus:outline-none"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Box Ringkasan */}
+          <div
+            className="flex flex-row gap-2 mt-2 sm:mt-0 overflow-x-auto sm:overflow-visible"
+          >
+            {items.map(({ icon: Icon, label, count, colorIcon }, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-md shadow flex flex-col sm:flex-row items-center justify-center flex-shrink-0 cursor-pointer transition-all duration-200 ease-in-out w-24 h-20 sm:w-40 sm:h-16 my-2 md:my-0 hover:shadow-lg text-center"
               >
-                <X size={16} />
-              </button>
-            )}
+                <Icon className={`mb-1 sm:mb-0 sm:mr-3 ${colorIcon} w-6 h-6 sm:w-8 sm:h-8`} />
+                <div className="flex flex-col sm:flex-col sm:items-start">
+                  <span className="text-xs sm:text-sm font-medium text-gray-900">{label}</span>
+                  <span className="text-sm sm:text-lg font-bold text-gray-700">{count}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

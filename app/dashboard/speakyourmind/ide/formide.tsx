@@ -63,12 +63,6 @@ propsFormIde) {
       toast.success(
         mode === "edit" ? "Successful updating!" : "Successfully send!"
       );
-      //  // Reset form hanya untuk mode create
-      //   if (mode === "create") {
-      //     setFrom("");
-      //     setTo("");
-      //     setIdea("");
-      //   }
       if (mode === "edit") {
         // Jika mode edit, reset hanya jika ada onCancel
         onCancel?.();

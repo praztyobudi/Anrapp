@@ -3,6 +3,7 @@
 import { Pencil, Trash2, Loader2, RefreshCw, Eye, RotateCw } from "lucide-react";
 import { propsRiwayatFraud } from "./types";
 import { useState } from "react";
+import useDelayedFlag from "../../../components/loading-time";
 
 export default function RiwayatFraud({
   // userData,
@@ -56,6 +57,9 @@ export default function RiwayatFraud({
     return isActuallyEdited && diffSeconds < maxAgeInSeconds;
   };
 
+  const emptyArmed = !loading && (frauds?.length ?? 0) === 0;
+  const showEmpty = useDelayedFlag(emptyArmed, 1000); // detik
+
   return (
     <div className="flex flex-col gap-4 h-[423px]">
       <div className="flex items-center justify-between sticky top-0 bg-white z-10">
@@ -71,9 +75,8 @@ export default function RiwayatFraud({
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className={`text-gray-500 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`text-gray-500 ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             title="Refresh"
           >
             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
@@ -81,7 +84,7 @@ export default function RiwayatFraud({
         </div>
       </div>
       <div className="border-b-2"></div>
-      {frauds.length === 0 && !isLoading ? (
+      {/* {frauds.length === 0 && !isLoading ? (
         // Jika tidak ada data yang ditemukan munculkan pesan tidak ada data
         <div className="flex items-center justify-center h-full">
           <div className="text-gray-500 italic">Sorry, no data!</div>
@@ -90,12 +93,25 @@ export default function RiwayatFraud({
         // Jika masih menunggu proses pengambilan data munculkan pesan loading
         <div className="flex items-center justify-center h-full">
           <RotateCw size={16} className={loading ? "animate-spin" : ""} />
+        </div> */}
+      {loading ? (
+        <div className="text-center text-gray-500 text-sm" aria-live="polite">
+          <span>Loading</span>
+          <span className="dot-anim ml-1 inline-block">.</span>
         </div>
+      ) : (frauds?.length ?? 0) === 0 ? (
+        showEmpty ? (
+          <div className="text-center text-gray-500 text-sm" aria-live="polite">
+            <p>Sorry, no data!</p>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500 text-sm" aria-live="polite">
+            <span>Wait a moment</span>
+            <span className="dot-anim ml-1 inline-block">.</span>
+          </div>
+        )
       ) : (
-        // Jika ada data, tampilkan data di sini
         <div>
-          {/* Render data di sini */}
-
           <div className="max-h-[350px] overflow-y-auto pr-2">
             <ul className="space-y-3">
               {[...frauds]
