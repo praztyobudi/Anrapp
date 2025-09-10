@@ -118,9 +118,6 @@ export default function RiwayatKrisar({
                       )}
                   </div>
                   <div className="flex justify-end items-center">
-                    {/* <div className="text-green-600 text-sm mt-1">
-                  To : All dept.
-                </div> */}
                     <div className="flex gap-2 mt-2 mr-2">
                       <button
                         onClick={() => editKrisar(item)}

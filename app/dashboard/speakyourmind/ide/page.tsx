@@ -8,7 +8,6 @@ import { ArrowLeft } from "lucide-react";
 import { Idea } from "./types";
 import AnrLogo from "../../../img/anrlogo";
 import AuthGuard from "../../../components/auth";
-import { me } from "../../../libs/users/api";
 
 export default function Home(p0: unknown) {
   const router = useRouter();
@@ -63,33 +62,33 @@ export default function Home(p0: unknown) {
       );
 
       const resData = await res.json();
-
+      console.log("Update response:", resData);
       if (!res.ok) {
         throw new Error(resData?.message || "Gagal mengupdate ide");
       }
-
-      // setIdeas(prev => prev.map(item =>
-      //   item.id === updatedIdea.id ? updatedIdea : item
-      // ));
-      // setSelectedIdea(null);
-
-      const ideupdate = {
-        ...updatedIdea,
-        updated_at: resData.data.updated_at,
-      };
-      setIdeas((prev) => {
-        // Hapus item lama
-        const filtered = prev.filter((item) => item.id !== updatedIdea.id);
-        // Tambahkan item yang baru diupdate ke paling atas
-        return [ideupdate, ...filtered];
-      });
+      console.log("resData from update:", resData);
+      if (resData.status === "success") {
+        await refreshData();
+        return { success: true };
+      }
+      // const ideupdate = {
+      //   ...updatedIdea,
+      //   updated_at: resData.data.updated_at,
+      //   created_at: resData.data.created_at,
+      // };
+      // setIdeas((prev) => {
+      //   // Hapus item lama
+      //   const filtered = prev.filter((item) => item.id !== updatedIdea.id);
+      //   // Tambahkan item yang baru diupdate ke paling atas
+      //   return [ideupdate, ...filtered];
+      // });
       return { success: true };
     } catch (error) {
       console.error("Update error:", error);
       return { success: false, error };
     }
   };
-
+  
   const refreshData = async () => {
     setStatusMsg("Please wait...");
     setLoading(true);
@@ -103,10 +102,25 @@ export default function Home(p0: unknown) {
         from: item?.name ?? "Anonim",
         to: item?.department ?? "Tidak diketahui",
         idea: item?.message ?? "",
-        date: item?.updated_at ?? "",
+        updated_at: item?.updated_at ?? "",
+        created_at: item?.created_at ?? "",
       })))
+//       const result = await res.json();
+// const raw = Array.isArray(result.data) ? result.data : [];
+// const normalized = raw
+//   .filter((item: any) => item?.id != null) // hanya item yang punya id
+//   .map((item: any) => ({
+//     id: String(item.id), // pastikan jadi string biar konsisten
+//     from: item?.name ?? "Anonim",
+//     to: item?.department ?? "Tidak diketahui",
+//     idea: item?.message ?? "",
+//     updated_at: item?.updated_at ?? "",
+//     created_at: item?.created_at ?? "",
+//   }));
 
+// setIdeas(normalized);
       setStatusMsg("Updated!");
+      return { success: true };
     } catch (error) {
       console.error("Gagal refresh data:", error);
       setStatusMsg("Gagal memuat data. Coba lagi.");
@@ -153,6 +167,7 @@ export default function Home(p0: unknown) {
                 defaultValue={selectedIdea ?? undefined}
                 mode={selectedIdea ? "edit" : "create"}
                 onCancel={handleCancelEdit}
+                refreshData={refreshData}
               />
             </div>
           </div>

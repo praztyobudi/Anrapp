@@ -3,14 +3,16 @@ export type Idea = {
   from: string;
   to: string;
   idea: string;
-  date: string;
+  // date: string;
+  updated_at: string;
+  created_at: string;
 };
 
 export type propsRiwayatIde = {
   onEdit: (idea: Idea) => void;
   ideas: Idea[];
   setIdeas: React.Dispatch<React.SetStateAction<Idea[]>>;
-  refreshData: () => Promise<void>;
+  refreshData: () => Promise<{success: boolean; error?: Error}>;
   statusMsg: string;
 };
 
@@ -19,6 +21,7 @@ export type propsFormIde = {
   defaultValue?: Idea;
   mode: "create" | "edit";
   onCancel?: () => void;
+  refreshData: () => Promise<{success: boolean; error?: Error}>;
 };
 // export type ApiIdea = {
 //   id: number;

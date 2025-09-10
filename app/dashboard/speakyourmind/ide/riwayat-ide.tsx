@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { propsRiwayatIde } from "./types";
 import { Trash2, RefreshCw, Eye } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,7 +14,7 @@ export default function ListIde({
   statusMsg,
 }: propsRiwayatIde) {
   const [loading, setLoading] = useState(false);
-
+  
   const handleDelete = async (id: number) => {
     if (!confirm("Yakin ingin menghapus ide ini?")) return;
     try {
@@ -29,13 +29,52 @@ export default function ListIde({
     }
   };
 
-  const isNew = (updatedAt: string) => {
-    const updated = new Date(updatedAt);
-    if (Number.isNaN(updated.getTime())) return false;
-    const now = new Date();
-    const diffSeconds = (now.getTime() - updated.getTime()) / 1000;
-    return diffSeconds < 60; // anggap baru jika < 60 detik
-  };
+  // Fungsi untuk memeriksa apakah tanggal valid
+const isValidDate = (dateString) => {
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date.getTime());
+};
+
+// Fungsi isNew
+const isNew = (created_at, maxAgeInSeconds = 60) => {
+  // Validasi input
+  if (!created_at || !isValidDate(created_at)) {
+    console.error(`Invalid created_at: ${created_at}`);
+    return false; // Kembalikan false jika tanggal tidak valid
+  }
+
+  const created = new Date(created_at);
+  const now = new Date();
+  const diffSeconds = (now.getTime() - created.getTime()) / 1000;
+  return diffSeconds < maxAgeInSeconds;
+};
+
+// Fungsi isEdited
+const isEdited = (created_at, updated_at, maxAgeInSeconds = 60) => {
+  // Validasi input
+  if (!created_at || !isValidDate(created_at)) {
+    console.error(`Invalid created_at: ${created_at}`);
+    return false;
+  }
+  if (!updated_at || !isValidDate(updated_at)) {
+    console.error(`Invalid updated_at: ${updated_at}`);
+    return false;
+  }
+
+  const created = new Date(created_at);
+  const updated = new Date(updated_at);
+  const now = new Date();
+  const isActuallyEdited = created.getTime() !== updated.getTime();
+  const diffSeconds = (now.getTime() - updated.getTime()) / 1000;
+
+  // Jika data masih dianggap 'new', jangan tampilkan 'edited'
+  if ((now.getTime() - created.getTime()) / 1000 < maxAgeInSeconds) {
+    return false;
+  }
+
+  return isActuallyEdited && diffSeconds < maxAgeInSeconds;
+};
+
 
   // Jika tidak loading dan data kosong -> mulai hitung
   const emptyArmed = !loading && (ideas?.length ?? 0) === 0;
@@ -68,9 +107,8 @@ export default function ListIde({
                 }
               }}
               disabled={loading}
-              className={`text-gray-500 ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`text-gray-500 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               title="Refresh"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
@@ -108,12 +146,20 @@ export default function ListIde({
                     From : {item.from}
                   </div>
                   <div className="text-xs text-gray-700">
-                    {isNew(item.date) && (
-                      <span className="ml-2 bg-green-100 text-green-600 p-1 mr-2 rounded-md">
-                        New!
+                    {isNew(item.created_at) && (
+                      <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 mr-2 rounded text-[12px]">
+                        New !
                       </span>
                     )}
-                    {new Date(item.date).toLocaleDateString("id-ID")}
+                    {!isNew(item.created_at) &&
+                      isEdited(item.created_at, item.updated_at) && (
+                        <span className="bg-yellow-100 text-yellow-600 ml-2 px-2 py-0.5 mr-2 rounded text-[12px]">
+                          Edited !
+                        </span>
+                      )}
+                    <span className="text-gray-500">
+                    {new Date(item.updated_at).toLocaleDateString("id-ID")}
+                  </span>
                   </div>
                 </div>
 

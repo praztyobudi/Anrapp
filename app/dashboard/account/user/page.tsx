@@ -38,7 +38,7 @@ export default function UserPage() {
       }
 
       try {
-        setLoading(true);
+        // setLoading(true);
         const response: { status: string; message: string; data: User } =
           await getUserById(userId.data.id);
 
