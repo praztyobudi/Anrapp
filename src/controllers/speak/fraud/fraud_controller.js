@@ -4,6 +4,13 @@ import {
 } from "../../../helper/response_status.js";
 import FraudService from "../../../services/speak/fraud/fraud_service.js";
 
+const imgUrl = (abs) => {
+  const parts = abs.split(path.sep);
+  const idx = parts.lastIndexOf("uploads");
+  if (idx === -1) return null;
+  return "/" + parts.slice(idx).join("/"); // "/uploads/2025/09/xxx.jpg"
+};
+
 export const getAllFraud = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -34,7 +41,7 @@ export const createFraud = async (req, res) => {
   try {
     const { types, fraud_message } = req.body;
     const user_id = req.user?.id;
-    console.log("user_id", user_id);
+    const img = req.file ? imgUrl(req.file.path) : null;
     if (!user_id || !types || !fraud_message) {
       return errorResponse(res, "Missing required fields");
     }
@@ -42,6 +49,7 @@ export const createFraud = async (req, res) => {
       user_id,
       types,
       fraud_message,
+      img,
     });
     return successResponse(
       res,

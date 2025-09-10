@@ -10,8 +10,8 @@ export const ideRepo = {
             i.user_id, 
             i.name, 
             i.message,
-            TO_CHAR(i.created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(i.updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at,
+            i.created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            i.updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at,
             d.department AS department
         FROM tb_ide i
         LEFT JOIN tb_department d ON i.department_id = d.id
@@ -25,8 +25,8 @@ export const ideRepo = {
             i.user_id, 
             i.name, 
             i.message,
-            TO_CHAR(i.created_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS created_at,
-            TO_CHAR(i.updated_at AT TIME ZONE 'Asia/Jakarta', 'DD/Mon/YYYY') AS updated_at,
+            i.created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            i.updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at,
             d.department AS department
         FROM tb_ide i
         LEFT JOIN tb_department d ON i.department_id = d.id
@@ -41,8 +41,8 @@ export const ideRepo = {
             const sql = `
               SELECT 
                 i.id, i.user_id, i.name, i.message,
-                TO_CHAR(i.created_at AT TIME ZONE 'Asia/Jakarta','DD/Mon/YYYY') AS created_at,
-                TO_CHAR(i.updated_at AT TIME ZONE 'Asia/Jakarta','DD/Mon/YYYY') AS updated_at,
+                i.created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+                i.updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at,
                 d.department AS department
               FROM tb_ide i
               LEFT JOIN tb_department d ON i.department_id = d.id
@@ -50,13 +50,13 @@ export const ideRepo = {
               LIMIT 1
             `;
             const result = await query(sql, [id]);
-            return result.rows[0] || null;
+            return result.rows[0];
         } else {
             const sql = `
               SELECT 
                 i.id, i.user_id, i.name, i.message,
-                TO_CHAR(i.created_at AT TIME ZONE 'Asia/Jakarta','DD/Mon/YYYY') AS created_at,
-                TO_CHAR(i.updated_at AT TIME ZONE 'Asia/Jakarta','DD/Mon/YYYY') AS updated_at,
+                i.created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+                i.updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at,
                 d.department AS department
               FROM tb_ide i
               LEFT JOIN tb_department d ON i.department_id = d.id
@@ -64,10 +64,10 @@ export const ideRepo = {
               LIMIT 1
             `;
             const result = await query(sql, [id, userId]);
-            return result.rows[0] || null;
+            return result.rows[0];
         }
     },
-    createIde: async ({ user_id, name, message, department }) => {
+    createIde: async ({ user_id, name, message, department, userRole }) => {
         // 1. Cari ID dari nama departemen
         const findDeptSQL = `SELECT id FROM tb_department WHERE department = $1 LIMIT 1`;
         const deptResult = await query(findDeptSQL, [department]);
@@ -81,8 +81,9 @@ export const ideRepo = {
         `;
         const insertResult = await query(insertSQL, [user_id, name, message, department_id]);
         const insertedIdeId = insertResult.rows[0].id;
-
-        const getFullIde = await ideRepo.getIdeById(insertedIdeId);
+        const userId = user_id;
+        const role = userRole;
+        const getFullIde = await ideRepo.getIdeById(insertedIdeId, role, userId);
         return getFullIde;
     },
     updateIde: async (id, data) => {
@@ -93,13 +94,22 @@ export const ideRepo = {
              WHERE id = $4 RETURNING id`,
             [data.name, data.message, data.department, id]
         );
-        const updateIde = result.rows[0].id;
-        const resultIde = await ideRepo.getIdeById(updateIde);
-        return resultIde;
+        const u_id = result.rows[0].id;
+        const dataRes = await query(`SELECT 
+                i.id, i.user_id, i.name, i.message,
+                i.created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+                i.updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at,
+                d.department AS department
+              FROM tb_ide i
+              LEFT JOIN tb_department d ON i.department_id = d.id
+              WHERE i.id = $1
+              ORDER BY i.updated_at DESC
+              LIMIT 1`, [u_id]);
+        return dataRes.rows[0];
     },
     deleteIdeById: async (id) => {
-        const result = await query('DELETE FROM tb_ide WHERE id = $1 RETURNING *', [id]);
-        return result.rowCount > 0;
+        const result = await query(`DELETE FROM tb_ide WHERE id = $1 RETURNING *`, [id]);
+        return result;
     }
 };
 

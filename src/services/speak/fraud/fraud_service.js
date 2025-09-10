@@ -5,7 +5,7 @@ class FraudService {
     return await fraudRepo.fraudRepo.getAllFraud(userId, userRole);
   }
 
-  async findFraudById(id, userId, userRole) {
+  async   findFraudById(id, userId, userRole) {
     return await fraudRepo.fraudRepo.getFraudById(id, userId, userRole);
   }
 

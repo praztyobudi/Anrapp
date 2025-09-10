@@ -7,8 +7,8 @@ const router = Router();
 router.get('/ide', authenticateToken, getAllIde);
 router.get('/ide/:id', authenticateToken, getIdeById);
 router.post('/ide', authenticateToken, createIde);
-router.put('/ide/:id', updateIde);
-router.delete('/ide/:id', deleteIde);
+router.put('/ide/:id', authenticateToken, updateIde);
+router.delete('/ide/:id', authenticateToken, deleteIde);
 
 export default router;
 // This file defines the routes for the Ide feature.

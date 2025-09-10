@@ -8,6 +8,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
+              f.img,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -21,6 +22,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
+              f.img,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -39,6 +41,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
+              f.img,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -53,6 +56,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
+              f.img,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -64,24 +68,15 @@ export const fraudRepo = {
     }
   },
 
-  createFraud: async ({ user_id, fraud_message, types }) => {
-    //Cari ID berdasarkan nama tipe
+  createFraud: async ({ user_id, fraud_message, types, img }) => {
     const findTypeName = `SELECT id FROM tb_types_fraud WHERE types = $1`;
     const outputResult = await query(findTypeName, [types]);
     const idType = outputResult.rows[0].id;
-    //Insert ke tabel tb_fraud
-    const sql = `INSERT INTO tb_fraud (user_id, fraud_message, type_id)
-            VALUES ($1, $2, $3) 
-            RETURNING 
-            id,
-            user_id, 
-            fraud_message, 
-            type_id,
-            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
-    const result = await query(sql, [user_id, fraud_message, idType]);
+    const sql = `INSERT INTO tb_fraud (user_id, fraud_message, type_id, img)
+            VALUES ($1, $2, $3,$4) 
+            RETURNING id`;
+    const result = await query(sql, [user_id, fraud_message, idType, img ?? null]);
     const createResult = result.rows[0].id;
-    //Ambil detail lengkap
     const fullResult = await fraudRepo.getFraudById(createResult);
     return fullResult;
   },

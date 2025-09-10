@@ -15,7 +15,7 @@ class KrisarService {
         const existingKrisar = await krisarRepo.krisarRepo.getKrisarById(data.id);
         if (existingKrisar) {
             throw new Error('Krisar entry already exists with this ID');
-        }
+        }   
         
         return await krisarRepo.krisarRepo.createKrisar(data);
     }

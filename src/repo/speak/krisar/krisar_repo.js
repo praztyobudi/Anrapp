@@ -28,6 +28,7 @@ export const krisarRepo = {
         }
     },
     getKrisarById: async (id, userId, userRole) => {
+        console.log('Fetching Krisar by ID:', id, 'User ID:', userId, 'User Role:', userRole);
        if (userRole === 'admin') {
          const sql = `SELECT
              id, 
