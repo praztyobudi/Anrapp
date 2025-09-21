@@ -43,7 +43,7 @@ services:
     volumes:
       - /home/praze/projectapp/anrapp/pgdata:/var/lib/postgresql/data
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_PORT:-5444}:5432"
     networks:
       - appnet
 
@@ -65,7 +65,7 @@ services:
     image: adminer:latest
     container_name: adminer
     ports:
-      - "8081:8080"
+      - "8181:8080"
     networks:
       - appnet
     restart: always

@@ -8,7 +8,6 @@ import { ArrowLeft } from "lucide-react";
 import { Idea } from "./types";
 import AnrLogo from "../../../img/anrlogo";
 import AuthGuard from "../../../components/auth";
-import { me } from "../../../libs/users/api";
 
 export default function Home(p0: unknown) {
   const router = useRouter();
@@ -63,33 +62,33 @@ export default function Home(p0: unknown) {
       );
 
       const resData = await res.json();
-
+      console.log("Update response:", resData);
       if (!res.ok) {
         throw new Error(resData?.message || "Gagal mengupdate ide");
       }
-
-      // setIdeas(prev => prev.map(item =>
-      //   item.id === updatedIdea.id ? updatedIdea : item
-      // ));
-      // setSelectedIdea(null);
-
-      const ideupdate = {
-        ...updatedIdea,
-        updated_at: resData.data.updated_at,
-      };
-      setIdeas((prev) => {
-        // Hapus item lama
-        const filtered = prev.filter((item) => item.id !== updatedIdea.id);
-        // Tambahkan item yang baru diupdate ke paling atas
-        return [ideupdate, ...filtered];
-      });
+      console.log("resData from update:", resData);
+      if (resData.status === "success") {
+        await refreshData();
+        return { success: true };
+      }
+      // const ideupdate = {
+      //   ...updatedIdea,
+      //   updated_at: resData.data.updated_at,
+      //   created_at: resData.data.created_at,
+      // };
+      // setIdeas((prev) => {
+      //   // Hapus item lama
+      //   const filtered = prev.filter((item) => item.id !== updatedIdea.id);
+      //   // Tambahkan item yang baru diupdate ke paling atas
+      //   return [ideupdate, ...filtered];
+      // });
       return { success: true };
     } catch (error) {
       console.error("Update error:", error);
       return { success: false, error };
     }
   };
-
+  
   const refreshData = async () => {
     setStatusMsg("Please wait...");
     setLoading(true);
@@ -97,19 +96,31 @@ export default function Home(p0: unknown) {
       const res = await fetch("https://app.prazelab.my.id/api/ide");
       if (!res.ok) throw new Error("Fetch failed");
       const result = await res.json();
-      console.log("Isi ideas:", result.data);
-      const cekRole = await me();
-      if (cekRole.data.role === "admin") {
-        console.log("Cek role admin:", cekRole.data.role + " - " + cekRole.data.name);
-        setIdeas(result.data.map((item: any) => ({
-          id: item?.id ?? 0,
-          from: item?.name ?? "Anonim",
-          to: item?.department ?? "Tidak diketahui",
-          idea: item?.message ?? "",
-          date: item?.updated_at ?? "",
-        })))
-      };
+      console.log("Successfully refreshed");
+      setIdeas(result.data.map((item: any) => ({
+        id: item?.id ?? 0,
+        from: item?.name ?? "Anonim",
+        to: item?.department ?? "Tidak diketahui",
+        idea: item?.message ?? "",
+        updated_at: item?.updated_at ?? "",
+        created_at: item?.created_at ?? "",
+      })))
+//       const result = await res.json();
+// const raw = Array.isArray(result.data) ? result.data : [];
+// const normalized = raw
+//   .filter((item: any) => item?.id != null) // hanya item yang punya id
+//   .map((item: any) => ({
+//     id: String(item.id), // pastikan jadi string biar konsisten
+//     from: item?.name ?? "Anonim",
+//     to: item?.department ?? "Tidak diketahui",
+//     idea: item?.message ?? "",
+//     updated_at: item?.updated_at ?? "",
+//     created_at: item?.created_at ?? "",
+//   }));
+
+// setIdeas(normalized);
       setStatusMsg("Updated!");
+      return { success: true };
     } catch (error) {
       console.error("Gagal refresh data:", error);
       setStatusMsg("Gagal memuat data. Coba lagi.");
@@ -131,11 +142,11 @@ export default function Home(p0: unknown) {
 
   return (
     <AuthGuard>
-      <main className="min-h-screen bg-green-700 flex flex-col items-center px-6 py-8">
-        <div className="flex gap-4 w-full justify-between left-4">
+      <main className="min-h-screen bg-green-700 flex flex-col items-center px-6">
+        <div className="flex w-full items-center justify-between">
           <button
             onClick={goBack}
-            className="self-start flex items-center gap-2 text-white hover:text-green-900 font-semibold"
+            className="flex items-center gap-2 text-white hover:text-green-900 font-semibold"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -145,22 +156,23 @@ export default function Home(p0: unknown) {
             <AnrLogo />
           </span>
         </div>
-        <h1 className="text-5xl font-bold pt-6 text-white text-center">
+        <h1 className="text-3xl font-bold pb-6 text-white text-center">
           Ide kreatifmu, semangat kita semua!
         </h1>
-        <div className="flex flex-col md:flex-row gap-6 w-full max-w-screen-2xl pt-4">
+        <div className="flex flex-col md:flex-row gap-6 w-full max-w-screen-2xl">
           <div className="w-full md:w-3/3">
-            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col">
               <FormIde
                 onSubmit={selectedIdea ? updateIdea : addIdea}
                 defaultValue={selectedIdea ?? undefined}
                 mode={selectedIdea ? "edit" : "create"}
                 onCancel={handleCancelEdit}
+                refreshData={refreshData}
               />
             </div>
           </div>
           <div className="w-full md:w-1/3">
-            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col my-6">
+            <div className="bg-white rounded-2xl p-6 shadow-md flex flex-col">
               <ListIde
                 onEdit={setSelectedIdea}
                 ideas={ideas}

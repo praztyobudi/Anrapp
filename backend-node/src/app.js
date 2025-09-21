@@ -5,8 +5,13 @@ import ideRoute from './routes/ide_routes.js';
 import krisarRoute from './routes/krisar_routes.js';
 import fraudRoute from './routes/fraud_routes.js';
 import cookieParser from 'cookie-parser';
+// import path from 'path';
+// import { fileURLToPath } from 'url';
+
 
 const app = express();
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 // Deteksi environment
 const isProduction = process.env.NODE_ENV === 'production';
@@ -14,7 +19,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 // Set CORS origin berdasarkan environment
 const corsOptions = {
   origin: isProduction
-    ? 'https://app.prazelab.my.id'   // domain frontend saat production
+    // ? 'https://app.prazelab.my.id'   // domain frontend saat production
+    ? 'http://36.67.110.108:3000'
     : 'http://192.168.1.10:3000',   // domain frontend saat development
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -30,5 +36,9 @@ app.use('/', fraudRoute);
 app.use('/', userRoute);
 // app.use('/users', userRoute);
 // Krisar routes
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+//   maxAge: '30d',
+//   immutable: true,
+// }));
 
 export default app;

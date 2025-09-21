@@ -4,9 +4,18 @@ import {
 } from "../../../helper/response_status.js";
 import FraudService from "../../../services/speak/fraud/fraud_service.js";
 
+const imgUrl = (abs) => {
+  const parts = abs.split(path.sep);
+  const idx = parts.lastIndexOf("uploads");
+  if (idx === -1) return null;
+  return "/" + parts.slice(idx).join("/"); // "/uploads/2025/09/xxx.jpg"
+};
+
 export const getAllFraud = async (req, res) => {
   try {
-    const data = await FraudService.findAllFraud();
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const data = await FraudService.findAllFraud(userId, userRole);
     return successResponse(res, "Success get all fraud reports", data);
   } catch (error) {
     console.error("Error in getAllFraud:", error);
@@ -16,7 +25,9 @@ export const getAllFraud = async (req, res) => {
 export const getFraudById = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await FraudService.findFraudById(id);
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const result = await FraudService.findFraudById(id, userId, userRole);
     if (!result) {
       return errorResponse(res, "Fraud report not found", null, 404);
     }
@@ -30,7 +41,7 @@ export const createFraud = async (req, res) => {
   try {
     const { types, fraud_message } = req.body;
     const user_id = req.user?.id;
-    console.log("user_id", user_id);
+    const img = req.file ? imgUrl(req.file.path) : null;
     if (!user_id || !types || !fraud_message) {
       return errorResponse(res, "Missing required fields");
     }
@@ -38,6 +49,7 @@ export const createFraud = async (req, res) => {
       user_id,
       types,
       fraud_message,
+      img,
     });
     return successResponse(
       res,

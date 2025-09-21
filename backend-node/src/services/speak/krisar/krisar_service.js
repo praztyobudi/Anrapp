@@ -1,11 +1,11 @@
 import * as krisarRepo from '../../../repo/speak/krisar/krisar_repo.js';
 
 class KrisarService {
-    async findAllKrisar() {
-        return await krisarRepo.krisarRepo.getAllKrisar();
+    async findAllKrisar(userId, userRole) {
+        return await krisarRepo.krisarRepo.getAllKrisar(userId, userRole);
     }
-    async findKrisarById(id) {
-        return await krisarRepo.krisarRepo.getKrisarById(id);
+    async findKrisarById(id, userId, userRole) {
+        return await krisarRepo.krisarRepo.getKrisarById(id, userId, userRole);
     }
     async createKrisar(data) {
         const { user_id, critique, suggestion } = data;
@@ -15,7 +15,7 @@ class KrisarService {
         const existingKrisar = await krisarRepo.krisarRepo.getKrisarById(data.id);
         if (existingKrisar) {
             throw new Error('Krisar entry already exists with this ID');
-        }
+        }   
         
         return await krisarRepo.krisarRepo.createKrisar(data);
     }

@@ -10,6 +10,7 @@ export default function FormIde({
   defaultValue,
   mode = "create",
   onCancel,
+  refreshData,
 }: // Default mode is create,
 propsFormIde) {
   const [from, setFrom] = useState("");
@@ -47,28 +48,24 @@ propsFormIde) {
       // setIsSubmitting(false);
       return;
     }
-    const formData: Idea = {
+    const formData = {
       // Jangan generate ID di frontend
       id: mode === "edit" && defaultValue ? defaultValue.id : undefined,
       from,
       to,
       idea,
-      date: new Date().toISOString(),
+      updated_at: new Date().toLocaleDateString("id-ID"),
+      created_at: new Date().toLocaleDateString("id-ID"),
       // date: `${new Date().toLocaleDateString("id-ID")} - New!`,
     };
 
-    const result = await onSubmit(formData);
+    const result = await onSubmit(formData as Idea);
+    await refreshData();
     console.log("Result:", result);
     if (result?.success) {
       toast.success(
         mode === "edit" ? "Successful updating!" : "Successfully send!"
       );
-      //  // Reset form hanya untuk mode create
-      //   if (mode === "create") {
-      //     setFrom("");
-      //     setTo("");
-      //     setIdea("");
-      //   }
       if (mode === "edit") {
         // Jika mode edit, reset hanya jika ada onCancel
         onCancel?.();

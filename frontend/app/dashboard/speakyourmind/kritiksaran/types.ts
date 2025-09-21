@@ -5,6 +5,15 @@ export type Krisar = {
   suggestion: string;
   updated_at: string;
   created_at: string;
+  user_name?: string;
+};
+
+export type userData = {
+  id: number;
+  name: string;
+  // username: string;
+  // department: string;
+  // role: string;
 };
 
 export type propsFormKrisar = {
@@ -16,6 +25,7 @@ export type propsFormKrisar = {
 };
 
 export type propsRiwayatKrisar = {
+  userData: string | null;
   editKrisar: (krisar: Krisar) => void;
   deleteKrisar: (id: number) => Promise<{success: boolean; error?: Error}>;
   krisars: Krisar[];

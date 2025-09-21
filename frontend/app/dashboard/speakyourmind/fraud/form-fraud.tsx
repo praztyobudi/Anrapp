@@ -1,6 +1,6 @@
-  import { useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, Loader, MessageCircleWarning, RotateCcw, Send, X } from "lucide-react";
+import { ChevronDown, Loader, MessageCircleWarning, Paperclip, RotateCcw, Send, X } from "lucide-react";
 import { FraudReq, propsFormFraud } from "./types";
 import { fraudSchema, FraudSchema } from "../../../validators/validate";
 import toast, { Toaster } from "react-hot-toast";
@@ -36,11 +36,11 @@ export default function FormFraud({
   }, [defaultValue, reset]);
 
   const submitHandler = async (data: FraudSchema) => {
-   const payload: FraudReq = {
-    id: mode === "edit" ? defaultValue?.id! : undefined!,
-    fraud_message: data.fraud_message,
-    types: data.types,
-  };
+    const payload: FraudReq = {
+      id: mode === "edit" ? defaultValue?.id! : undefined!,
+      fraud_message: data.fraud_message,
+      types: data.types,
+    };
     await onSubmit(payload);
     if (mode === "create") {
       toast.success("Successfully reported!");
@@ -73,9 +73,8 @@ export default function FormFraud({
               <select
                 {...register("types")}
                 defaultValue=""
-                className={`appearance-none w-full bg-gray-50 p-3 rounded-xl text-sm md:text-base border ${
-                  errors.types ? "border-red-500 " : "border-gray-300"
-                } focus:outline-red-600`}
+                className={`appearance-none w-full bg-gray-50 p-3 rounded-xl text-sm md:text-base border ${errors.types ? "border-red-500 " : "border-gray-300"
+                  } focus:outline-red-600`}
                 disabled={isLoading}
               >
                 <option value="" disabled hidden>
@@ -101,9 +100,8 @@ export default function FormFraud({
           <div className="mt-4">
             <textarea
               {...register("fraud_message")}
-              className={`w-full border p-2 rounded bg-gray-50  md:rounded-xl md:p-4 min-h-[150px] md:min-h-[295px] text-sm md:text-lg text-gray-700 focus:outline-red-600 resize-none ${
-                errors.fraud_message ? "border-red-500" : ""
-              }`}
+              className={`w-full border p-2 rounded bg-gray-50  md:rounded-xl md:p-4 min-h-[150px] md:min-h-[295px] text-sm md:text-lg text-gray-700 focus:outline-red-600 resize-none ${errors.fraud_message ? "border-red-500" : ""
+                }`}
               disabled={isLoading}
               placeholder="Tulis temuanmu di sini..."
             />
@@ -114,42 +112,53 @@ export default function FormFraud({
             )}
           </div>
         </div>
-        <div className="flex justify-end w-full">
-          <div className="flex justify-end w-full items-center gap-4">
-            {mode === "edit" && onCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="bg-red-500 hover:bg-red-900 text-white items-center font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex gap-2 shadow-md transition"
-              >
-                <X className="w-4 h-4 md:w-5 md:h-5" />
-                Cancel
-              </button>
-            )}
-
+        <div className="flex justify-between w-full items-center gap-4">
+          <div className="relative inline-block group">
+            <span className="absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-50 text-gray-500 font-medium text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+              Attach File
+            </span>
             <button
               type="submit"
-              disabled={isLoading}
-              className={`bg-green-700 hover:bg-green-900 text-white items-center font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex gap-2 shadow-md transition ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              } text-sm md:text-base`}
-            >
-              {isLoading ? (
-                <span className="animate-spin">
-                  <Loader className="w-4 h-4 md:w-5 md:h-5" />
-                </span>
-              ) : mode === "edit" ? (
-                <>
-                <RotateCcw className="w-4 h-4 md:w-5 md:h-5"/> 
-                <span>Update</span>
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4 md:w-5 md:h-5" />
-                  <span>Report !</span>
-                </>
-              )}
+              className="bg-gray-50 hover:bg-gray-200 text-gray-500 font-medium text-sm px-4 py-2 md:px-4 md:py-2 rounded-full flex gap-2 shadow-md transition mr-2 items-center">
+              <Paperclip className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
             </button>
+          </div>
+
+          <div className="flex justify-end w-full">
+            <div className="flex justify-end w-full items-center gap-4">
+              {mode === "edit" && onCancel && (
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="bg-red-500 hover:bg-red-900 text-white items-center font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex gap-2 shadow-md transition"
+                >
+                  <X className="w-4 h-4 md:w-5 md:h-5" />
+                  Cancel
+                </button>
+              )}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={`bg-green-700 hover:bg-green-900 text-white items-center font-medium px-6 py-2 md:px-8 md:py-3 rounded-full flex gap-2 shadow-md transition ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  } text-sm md:text-base`}
+              >
+                {isLoading ? (
+                  <span className="animate-spin">
+                    <Loader className="w-4 h-4 md:w-5 md:h-5" />
+                  </span>
+                ) : mode === "edit" ? (
+                  <>
+                    <RotateCcw className="w-4 h-4 md:w-5 md:h-5" />
+                    <span>Update</span>
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 md:w-5 md:h-5" />
+                    <span>Report !</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </form>

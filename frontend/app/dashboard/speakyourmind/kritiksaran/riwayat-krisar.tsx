@@ -1,6 +1,7 @@
 import { Eye, RefreshCw, RotateCw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { propsRiwayatKrisar } from "./types";
+import useDelayedFlag from "../../../components/loading-time";
 
 export default function RiwayatKrisar({
   refreshData,
@@ -10,28 +11,6 @@ export default function RiwayatKrisar({
   deleteKrisar,
 }: propsRiwayatKrisar) {
   const [loading, setLoading] = useState(false);
-
-  // const isNew = (created_at: string) => {
-  //   const created = new Date(created_at);
-  //   const now = new Date();
-  //   const diffSeconds = (now.getTime() - created.getTime()) / 1000;
-  //   return diffSeconds < 60; // Jika kurang dari angka detik dianggap baru
-  // };
-
-  // const isEdited = (
-  //   created_at: string,
-  //   updated_at: string,
-  //   maxAgeInSeconds: number = 60
-  // ) => {
-  //   const created = new Date(created_at);
-  //   const updated = new Date(updated_at);
-  //   const now = new Date();
-
-  //   const isActuallyEdited = created.getTime() !== updated.getTime();
-  //   const diffSeconds = (now.getTime() - updated.getTime()) / 1000;
-
-  //   return isActuallyEdited && diffSeconds < maxAgeInSeconds;
-  // };
   const isNew = (created_at: string, maxAgeInSeconds: number = 60) => {
     const created = new Date(created_at);
     const now = new Date();
@@ -65,6 +44,9 @@ export default function RiwayatKrisar({
     refreshData().finally(() => setLoading(false));
   };
 
+  const emptyArmed = !loading && (krisars?.length ?? 0) === 0;
+  const showEmpty = useDelayedFlag(emptyArmed, 1000); // detik
+
   return (
     <>
       <div className="flex flex-col gap-4 h-[460px]">
@@ -84,9 +66,8 @@ export default function RiwayatKrisar({
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className={`text-gray-500 ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`text-gray-500 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               title="Refresh"
             >
               <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
@@ -104,13 +85,17 @@ export default function RiwayatKrisar({
                 <RotateCw size={16} className={loading ? "animate-spin" : ""} />
               </div>
             </div>
-          ) : krisars.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center text-gray-500 text-sm">
-                {" "}
-                <span>Sorry, no data!</span>
+          ) : (krisars?.length ?? 0) === 0 ? (
+            showEmpty ? (
+              <div className="text-center text-gray-500 text-sm" aria-live="polite">
+                <p>Sorry, no data!</p>
               </div>
-            </div>
+            ) : (
+              <div className="text-center text-gray-500 text-sm" aria-live="polite">
+                <span>Wait a moment</span>
+                <span className="dot-anim ml-1 inline-block">.</span>
+              </div>
+            )
           ) : (
             krisars.map((item) => (
               <div
@@ -119,7 +104,7 @@ export default function RiwayatKrisar({
               >
                 <div className="flex justify-between items-center">
                   <div className="font-semibold text-gray-700 text-sm">
-                    I'am Anonymous
+                    {item.user_name}
                     {isNew(item.created_at) && (
                       <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 rounded text-[12px]">
                         New !
@@ -133,9 +118,6 @@ export default function RiwayatKrisar({
                       )}
                   </div>
                   <div className="flex justify-end items-center">
-                    {/* <div className="text-green-600 text-sm mt-1">
-                  To : All dept.
-                </div> */}
                     <div className="flex gap-2 mt-2 mr-2">
                       <button
                         onClick={() => editKrisar(item)}

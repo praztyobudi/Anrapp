@@ -6,7 +6,9 @@ import {
 
 export const getAllKrisar = async (req, res) => {
   try {
-    const data = await KrisarService.findAllKrisar();
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const data = await KrisarService.findAllKrisar(userId, userRole);
     return successResponse(
       res,
       "Success get all critiques and suggestions",
@@ -20,7 +22,9 @@ export const getAllKrisar = async (req, res) => {
 export const getKrisarById = async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await KrisarService.findKrisarById(id);
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const result = await KrisarService.findKrisarById(id, userId, userRole);
     if (!result) {
       return errorResponse(res, "Critique or suggestion not found", null, 404);
     }

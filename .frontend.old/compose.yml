@@ -1,0 +1,26 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anrapp-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - appnet
+      # - backend-node_appnet
+      # - backend_appnet
+    environment:
+      - NEXT_PUBLIC_API_URL=http://anrapp-backend:8080
+    restart: always
+    tty: true
+    stdin_open: true
+    
+networks:
+  appnet:
+  # backend-node_appnet:
+  # backend_appnet:
+    external: true
