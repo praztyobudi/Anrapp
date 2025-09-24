@@ -1,0 +1,39 @@
+--
+-- PostgreSQL database cluster dump
+--
+
+-- Started on 2025-09-24 06:38:16 UTC
+
+\restrict ty6NOBCo1jzOlocaJ3VTjucoIhzi3qqvuHLaS3x6ZofattGTZ5dQhUWdzIDd1WE
+
+SET default_transaction_read_only = off;
+
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+
+--
+-- Roles
+--
+
+CREATE ROLE postgres;
+ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:wlhhOqfrcTXCLMyTwON+Ww==$YK7shwCqH+CReIAsrt0NGzzvD3YNuV/u7OxDkpHQ+T0=:dKSGb4Sf6evz/snBUHlXQ9J0wGYzsW1ejFxfMihXxFA=';
+
+--
+-- User Configurations
+--
+
+
+
+
+
+
+
+
+\unrestrict ty6NOBCo1jzOlocaJ3VTjucoIhzi3qqvuHLaS3x6ZofattGTZ5dQhUWdzIDd1WE
+
+-- Completed on 2025-09-24 06:38:16 UTC
+
+--
+-- PostgreSQL database cluster dump complete
+--
+
