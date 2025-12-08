@@ -41,7 +41,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
-              f.img,
+              f.img as bukti,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -56,7 +56,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
-              f.img,
+              f.img as bukti,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -81,20 +81,63 @@ export const fraudRepo = {
     return fullResult;
   },
 
-  updateFraud: async (id, { fraud_message, types }) => {
+  updateFraud: async (id, { fraud_message, types, img }) => {
     const findTypeName = `SELECT id FROM tb_types_fraud WHERE types = $1`;
     const outputResult = await query(findTypeName, [types]);
     const idType = outputResult.rows[0].id;
-    const sql = `UPDATE tb_fraud
-            SET fraud_message = $1, type_id = $2, updated_at = NOW() 
-            WHERE id = $3 RETURNING 
-            id,
-            user_id, 
-            fraud_message, 
-            type_id,
-            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
-    const result = await query(sql, [fraud_message, idType, id]);
+
+    let sql;
+    let params;
+
+    if (img !== undefined) {
+    sql = `
+      UPDATE tb_fraud
+      SET 
+        fraud_message = $1,
+        type_id = $2,
+        img = $3,
+        updated_at = NOW()
+      WHERE id = $4
+      RETURNING 
+        id,
+        user_id,
+        fraud_message,
+        type_id,
+        img,
+        created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+        updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+    `;
+    params = [fraud_message, idType, img, id];
+  } else {
+    // 3. Kalau img TIDAK dikirim → jangan sentuh kolom img
+    sql = `
+      UPDATE tb_fraud
+      SET 
+        fraud_message = $1,
+        type_id = $2,
+        updated_at = NOW()
+      WHERE id = $3
+      RETURNING 
+        id,
+        user_id,
+        fraud_message,
+        type_id,
+        img,
+        created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+        updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+    `;
+    params = [fraud_message, idType, id];
+  }
+    // const sql = `UPDATE tb_fraud
+    //         SET fraud_message = $1, type_id = $2, updated_at = NOW() 
+    //         WHERE id = $3 RETURNING 
+    //         id,
+    //         user_id, 
+    //         fraud_message, 
+    //         type_id,
+    //         created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+    //         updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
+    const result = await query(sql, params);
     const updateResult = result.rows[0].id;
     //Ambil detail lengkap
     const fullResult = await fraudRepo.getFraudById(updateResult);

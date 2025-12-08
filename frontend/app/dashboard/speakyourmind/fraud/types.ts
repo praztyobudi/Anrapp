@@ -4,6 +4,7 @@ export type Fraud = {
   user_id: number;
   fraud_message: string;
   type_message: string;
+  img: string;
   created_at: string;
   updated_at: string;
   userData: string | null;
@@ -13,6 +14,7 @@ export type FraudReq = {
   id?: number;
   fraud_message: string;
   types: string;
+  bukti: File | null;
 };
 
 export type userData = {
@@ -21,7 +23,7 @@ export type userData = {
 };
 
 export type propsFormFraud = {
-  onSubmit: (fraud: FraudReq) => Promise<{ success: boolean; error?: Error }>;
+  onSubmit: (fraud: FraudReq | Fraud | FormData) => Promise<{ success: boolean; error?: Error }>;
   defaultValue?: FraudReq;
   mode: "create" | "edit";
   onCancel?: () => void;

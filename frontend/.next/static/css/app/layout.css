@@ -539,9 +539,6 @@ video {
 .left-1\/2 {
   left: 50%;
 }
-.left-full {
-  left: 100%;
-}
 .right-0 {
   right: 0px;
 }
@@ -706,6 +703,12 @@ video {
 .max-h-\[500px\] {
   max-height: 500px;
 }
+.max-h-\[80vh\] {
+  max-height: 80vh;
+}
+.max-h-\[90\%\] {
+  max-height: 90%;
+}
 .min-h-1\.5 {
   min-height: 0.375rem;
 }
@@ -762,6 +765,12 @@ video {
 }
 .max-w-3xl {
   max-width: 48rem;
+}
+.max-w-\[90\%\] {
+  max-width: 90%;
+}
+.max-w-full {
+  max-width: 100%;
 }
 .max-w-md {
   max-width: 28rem;
@@ -870,6 +879,9 @@ video {
 .gap-2 {
   gap: 0.5rem;
 }
+.gap-3 {
+  gap: 0.75rem;
+}
 .gap-4 {
   gap: 1rem;
 }
@@ -923,6 +935,9 @@ video {
   --tw-divide-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-divide-opacity, 1));
 }
+.overflow-auto {
+  overflow: auto;
+}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -931,6 +946,11 @@ video {
 }
 .overflow-y-auto {
   overflow-y: auto;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .whitespace-nowrap {
   white-space: nowrap;
@@ -1066,6 +1086,12 @@ video {
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
 }
+.bg-opacity-60 {
+  --tw-bg-opacity: 0.6;
+}
+.bg-opacity-75 {
+  --tw-bg-opacity: 0.75;
+}
 .stroke-green-600 {
   stroke: #16a34a;
 }
@@ -1181,6 +1207,9 @@ video {
 }
 .text-center {
   text-align: center;
+}
+.text-right {
+  text-align: right;
 }
 .text-end {
   text-align: end;
@@ -1509,6 +1538,11 @@ video {
   background-color: rgb(20 83 45 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-red-600:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 38 38 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:bg-red-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(185 28 28 / var(--tw-bg-opacity, 1));
@@ -1536,6 +1570,11 @@ video {
 .hover\:text-gray-200:hover {
   --tw-text-opacity: 1;
   color: rgb(229 231 235 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-green-800:hover {
+  --tw-text-opacity: 1;
+  color: rgb(22 101 52 / var(--tw-text-opacity, 1));
 }
 
 .hover\:text-green-900:hover {
@@ -1859,11 +1898,6 @@ video {
     padding: 1.5rem;
   }
 
-  .md\:px-4 {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
   .md\:px-6 {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
@@ -1877,11 +1911,6 @@ video {
   .md\:py-0 {
     padding-top: 0px;
     padding-bottom: 0px;
-  }
-
-  .md\:py-2 {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
   }
 
   .md\:py-28 {

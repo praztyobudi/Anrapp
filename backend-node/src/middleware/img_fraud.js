@@ -16,18 +16,19 @@ const storage = multer.diskStorage({
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
-  filename: (_, file, cb) => {
-    const ext = (path.extname(file.originalname) || '.jpg').toLowerCase();
-    const safeExt = ['.jpg','.jpeg','.png','.webp'].includes(ext) ? ext : '.jpg';
-    cb(null, `${Date.now()}-${Math.round(Math.random()*1e9)}${safeExt}`);
-  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const userId = req.user?.id || 'anon';
+    const newName = `fraud_${userId}_${Date.now()}${ext}`;
+    cb(null, newName);
+  },  
 });
 
 export const uploadBukti = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB 
   fileFilter: (_, file, cb) => {
     const ok = ['image/jpeg','image/png','image/webp'].includes(file.mimetype);
     cb(ok ? null : new Error('Hanya JPEG/PNG/WEBP'), ok);
   },
-}).single('bukti');
+}).single('img');

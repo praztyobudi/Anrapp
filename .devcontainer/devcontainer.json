@@ -1,0 +1,17 @@
+{
+  "name": "Anrapp",
+  "dockerComposeFile": "compose.yml",
+  "service": "frontend",
+  "workspaceFolder": "/app",
+  "remoteUser": "node",
+  "postCreateCommand": "npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

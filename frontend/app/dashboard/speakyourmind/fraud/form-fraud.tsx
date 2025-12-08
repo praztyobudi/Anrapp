@@ -18,6 +18,8 @@ export default function FormFraud({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<FraudSchema>({
     resolver: zodResolver(fraudSchema),
@@ -35,23 +37,70 @@ export default function FormFraud({
     }
   }, [defaultValue, reset]);
 
+  // const submitHandler = async (data: FraudSchema) => {
+  //   const payload: FraudReq = {
+  //     id: mode === "edit" ? defaultValue?.id! : undefined!,
+  //     fraud_message: data.fraud_message,
+  //     types: data.types,
+  //     bukti: defaultValue.bukti || null,
+  //   };
+  //   await onSubmit(payload);
+  //   if (mode === "create") {
+  //     toast.success("Successfully reported!");
+  //     await refreshData?.();
+  //   } else {
+  //     toast.success("Successfully updated the report!");
+  //     onCancel?.();
+  //     await refreshData?.();
+  //   }
+  //   reset(); // reset form setelah berhasil kirim
+  // };
+
+  const selectedFile = watch("bukti") as File | null | undefined;
+
   const submitHandler = async (data: FraudSchema) => {
-    const payload: FraudReq = {
-      id: mode === "edit" ? defaultValue?.id! : undefined!,
-      fraud_message: data.fraud_message,
-      types: data.types,
-    };
-    await onSubmit(payload);
-    if (mode === "create") {
-      toast.success("Successfully reported!");
+    try {
+      const id = mode === "edit" ? defaultValue?.id : undefined;
+      const hasFile =
+        // @ts-ignore — jika FraudSchema kamu sudah ditambah field `bukti`, hapus ts-ignore
+        data.bukti && data.bukti instanceof File;
+
+      if (hasFile) {
+        // Kirim multipart/form-data
+        const fd = new FormData();
+        if (id) fd.append("id", String(id));
+        fd.append("fraud_message", data.fraud_message);
+        fd.append("types", data.types);
+        // @ts-ignore — sama seperti di atas
+        fd.append("bukti", data.bukti as File);
+
+        // Pastikan onSubmit mendukung FormData di page.tsx
+        await onSubmit(fd as any);
+      } else {
+        // Kirim JSON biasa. Saat edit dan tidak ganti file,
+        // sebaiknya JANGAN kirim field `bukti` agar bukti lama tidak terhapus.
+        const payload: any = {
+          fraud_message: data.fraud_message,
+          types: data.types,
+        };
+        if (id) payload.id = id;
+
+        await onSubmit(payload);
+      }
+
+      if (mode === "create") {
+        toast.success("Successfully reported!");
+      } else {
+        toast.success("Successfully updated the report!");
+        onCancel?.();
+      }
       await refreshData?.();
-    } else {
-      toast.success("Successfully updated the report!");
-      onCancel?.();
-      await refreshData?.();
+      reset();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal mengirim laporan");
     }
-    reset(); // reset form setelah berhasil kirim
   };
+
 
   return (
     <>
@@ -112,19 +161,53 @@ export default function FormFraud({
             )}
           </div>
         </div>
-        <div className="flex justify-between w-full items-center gap-4">
-          <div className="relative inline-block group">
-            <span className="absolute left-full top-1/2 -translate-y-1/2 whitespace-nowrap bg-gray-50 text-gray-500 font-medium text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-              Attach File
-            </span>
-            <button
-              type="submit"
-              className="bg-gray-50 hover:bg-gray-200 text-gray-500 font-medium text-sm px-4 py-2 md:px-4 md:py-2 rounded-full flex gap-2 shadow-md transition mr-2 items-center">
-              <Paperclip className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-            </button>
+        <div className="flex justify-between items-center gap-4">
+          <div className="flex flex-col gap-1">
+            {/* Tombol attach */}
+            <div className="flex items-center gap-3">
+              <label
+                htmlFor="bukti"
+                className="bg-gray-50 hover:bg-gray-200 text-gray-500 font-medium text-sm px-4 py-2 rounded-full flex gap-2 shadow-md transition cursor-pointer"
+              >
+                <Paperclip className="w-4 h-4" />
+                <span>Bukti</span>
+              </label>
+
+              <input
+                id="bukti"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] ?? null;
+                  setValue("bukti", file, { shouldValidate: true });
+                }}
+              />
+
+              {selectedFile && (
+                <div className="flex items-center gap-2 text-xs text-gray-600 w-full">
+                <span className="truncate flex-1">{selectedFile.name}</span>
+                <span className="text-gray-400 whitespace-nowrap">
+                  ({Math.round(selectedFile.size / 1024)} KB)
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setValue("bukti", null, { shouldValidate: true })}
+                  className="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
+                  title="Hapus file"
+                >
+                  ×
+                </button>
+              </div>
+              
+              )}
+            </div>
+            {/* {!selectedFile && (
+              <span className="text-xs text-gray-400 ml-1">Tidak ada</span>
+            )} */}
           </div>
 
-          <div className="flex justify-end w-full">
+          <div className="flex justify-end">
             <div className="flex justify-end w-full items-center gap-4">
               {mode === "edit" && onCancel && (
                 <button

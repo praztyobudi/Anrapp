@@ -5,14 +5,21 @@ import ideRoute from './routes/ide_routes.js';
 import krisarRoute from './routes/krisar_routes.js';
 import fraudRoute from './routes/fraud_routes.js';
 import cookieParser from 'cookie-parser';
-// import path from 'path';
-// import { fileURLToPath } from 'url';
+import path from 'path';
+import { baseDir } from './middleware/img_fraud.js';
+import { fileURLToPath } from 'url';
 
 
 const app = express();
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
 
+console.log("Upload Directorya :", baseDir);
+
+app.use("/uploads", express.static(baseDir, {
+  maxAge: '1d',
+  immutable: false,
+  etag: true,
+  lastModified: true,
+}));
 // Deteksi environment
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -26,12 +33,13 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 };
 
+
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use('/', fraudRoute);
 app.use(express.json());
 app.use('/', krisarRoute);
 app.use('/', ideRoute);
-app.use('/', fraudRoute);
 // user authentication routes
 app.use('/', userRoute);
 // app.use('/users', userRoute);

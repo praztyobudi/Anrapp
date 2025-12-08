@@ -1,6 +1,13 @@
 "use client";
 
-import { Pencil, Trash2, Loader2, RefreshCw, Eye, RotateCw } from "lucide-react";
+import {
+  FileImage,
+  Trash2,
+  Loader2,
+  RefreshCw,
+  Eye,
+  RotateCw,
+} from "lucide-react";
 import { propsRiwayatFraud } from "./types";
 import { useState } from "react";
 import useDelayedFlag from "../../../components/loading-time";
@@ -17,6 +24,7 @@ export default function RiwayatFraud({
 }: propsRiwayatFraud) {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
 
   const handleDelete = async (id: number) => {
     setDeletingId(id);
@@ -60,6 +68,17 @@ export default function RiwayatFraud({
   const emptyArmed = !loading && (frauds?.length ?? 0) === 0;
   const showEmpty = useDelayedFlag(emptyArmed, 1000); // detik
 
+  const BASE = "https://app.prazelab.my.id";
+
+  const toBuktiUrl = (p?: string | null) => {
+    if (!p) return "";
+    if (p.startsWith("http")) return p;
+
+    // pastikan selalu diawali /uploads
+    const clean = p.replace(/^\/+/, ""); // hapus leading slash kalau ada
+    return `${BASE}/uploads/${clean}`;
+  };
+
   return (
     <div className="flex flex-col gap-4 h-[423px]">
       <div className="flex items-center justify-between sticky top-0 bg-white z-10">
@@ -75,8 +94,9 @@ export default function RiwayatFraud({
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className={`text-gray-500 ${loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+            className={`text-gray-500 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             title="Refresh"
           >
             <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
@@ -114,7 +134,7 @@ export default function RiwayatFraud({
         <div>
           <div className="max-h-[350px] overflow-y-auto pr-2">
             <ul className="space-y-3">
-              {[...frauds]
+              {/* {[...frauds]
                 .sort(
                   (a, b) =>
                     new Date(b.updated_at).getTime() -
@@ -173,8 +193,128 @@ export default function RiwayatFraud({
                       </div>
                     </div>
                   </li>
-                ))}
+                ))} */}
+
+              {[...frauds]
+                .sort(
+                  (a, b) =>
+                    new Date(b.updated_at).getTime() -
+                    new Date(a.updated_at).getTime()
+                )
+                .map((fraud) => {
+                  return (
+                    <li
+                      key={fraud.id}
+                      className="border-b last:border-0 py-2 last:pb-0"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-bold text-gray-700">
+                            {fraud.userData}
+                            {isNew(fraud.created_at) && (
+                              <span className="bg-green-100 text-green-600 ml-2 px-2 py-0.5 rounded text-[12px]">
+                                New !
+                              </span>
+                            )}
+                            {!isNew(fraud.created_at) &&
+                              isEdited(fraud.created_at, fraud.updated_at) && (
+                                <span className="bg-yellow-100 text-yellow-600 ml-2 px-2 py-0.5 rounded text-[12px]">
+                                  Edited !
+                                </span>
+                              )}
+                          </p>
+                          <p className="text-gray-600 text-sm font-semibold">
+                            Issue : {fraud.type_message}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col items-end">
+                          <p className="text-sm text-gray-400 mt-1">
+                            {new Date(fraud.created_at).toLocaleDateString()}
+                          </p>
+
+                          <div className="flex items-center gap-2 mt-1">
+                            <button
+                              onClick={() => editFraud(fraud)}
+                              className="text-blue-600 hover:text-blue-800"
+                              title="Edit"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+
+                            {fraud.img && (
+                              <button
+                                onClick={() =>
+                                  setPreview(toBuktiUrl(fraud.img))
+                                }
+                                className="text-green-600 hover:text-green-800"
+                                title="Lihat Bukti"
+                              >
+                                <FileImage className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => handleDelete(fraud.id)}
+                              className="text-red-600 hover:text-red-800"
+                              title="Hapus"
+                              disabled={deletingId === fraud.id}
+                            >
+                              {deletingId === fraud.id ? (
+                                <Loader2 className="animate-spin w-4 h-4" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
             </ul>
+            {preview && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+                onClick={() => setPreview(null)}
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-white rounded-lg p-4 max-w-[90%] max-h-[90%] overflow-auto relative"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                    <Loader2 className="animate-spin w-8 h-8 text-blue-600" />
+                  </div>
+
+                  <img
+                    src={preview!}
+                    alt="Bukti Fraud"
+                    className="max-w-full max-h-[80vh] object-contain rounded"
+                    onLoad={(e) => {
+                      e.currentTarget.parentElement
+                        ?.querySelector(".absolute")
+                        ?.remove();
+                    }}
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      img.src = "/no-image.png";
+                      img.alt = "Gambar tidak ditemukan";
+                      // console.error("Gagal load:", `https://app.prazelab.my.id/uploads/${preview}`);
+
+                      img.parentElement?.querySelector(".absolute")?.remove();
+                    }}
+                  />
+
+                  <div className="text-right mt-3">
+                    <button
+                      onClick={() => setPreview(null)}
+                      className="px-4 py-2 text-sm bg-red-500 text-white hover:bg-red-600 rounded transition"
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

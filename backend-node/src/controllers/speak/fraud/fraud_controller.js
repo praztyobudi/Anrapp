@@ -3,6 +3,8 @@ import {
   errorResponse,
 } from "../../../helper/response_status.js";
 import FraudService from "../../../services/speak/fraud/fraud_service.js";
+import path from "path";
+import { baseDir } from "../../../middleware/img_fraud.js";
 
 const imgUrl = (abs) => {
   const parts = abs.split(path.sep);
@@ -69,7 +71,14 @@ export const updateFraud = async (req, res) => {
     if (!fraud_message || !types) {
       return errorResponse(res, "Missing required fields");
     }
-    const result = await FraudService.updateFraud(id, req.body);
+    const payload = {
+      fraud_message,
+      types,
+    };
+    if (req.file) {
+      payload.img = imgUrl(req.file.path);
+    }
+    const result = await FraudService.updateFraud(id, payload);
     return successResponse(res, "Fraud report updated successfully", result);
   } catch (error) {
     console.error("Error in updateFraud:", error);

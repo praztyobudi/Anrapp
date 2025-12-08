@@ -14,6 +14,6 @@ const router = Router();
 router.get("/fraud", authenticateToken, getAllFraud);
 router.get("/fraud/:id", authenticateToken, getFraudById);
 router.post("/fraud", authenticateToken, uploadBukti, createFraud);
-router.put('/fraud/:id', updateFraud);
+router.put('/fraud/:id', authenticateToken, uploadBukti, updateFraud);
 router.delete('/fraud/:id', deleteFraud);
 export default router;

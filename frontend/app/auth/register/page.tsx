@@ -24,7 +24,7 @@ export default function RegisterPage() {
     setMessage(null);
 
     try {
-      const res = await fetch('http://36.67.110.108:3000/api/register', {
+      const res = await fetch('https://app.prazelab.my.id/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

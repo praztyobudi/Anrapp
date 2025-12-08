@@ -81,84 +81,175 @@ export default function Home() {
     }
   };
 
-  const addFraud = async (
-    fraud: FraudReq
-  ): Promise<{ success: boolean; error?: Error }> => {
-    try {
-      setLoading(true);
-      setError(null);
+  // const addFraud = async (
+  //   fraud: FraudReq
+  // ): Promise<{ success: boolean; error?: Error }> => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
 
-      const res = await fetch("https://app.prazelab.my.id/api/fraud", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(fraud),
-      });
+  //     const res = await fetch("https://app.prazelab.my.id/api/fraud", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       credentials: "include",
+  //       body: JSON.stringify(fraud),
+  //     });
 
-      const result = await res.json();
+  //     const result = await res.json();
 
-      // Cek response dari backend
-      if (!res.ok || result.status !== "success") {
-        throw new Error(result.message || "Gagal menambah data");
-      }
-      return { success: true };
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Gagal menambah data";
-      setError(msg);
-      // toast.error(msg);
-      return { success: false, error: err as Error };
-    } finally {
-      setLoading(false);
+  //     // Cek response dari backend
+  //     if (!res.ok || result.status !== "success") {
+  //       throw new Error(result.message || "Gagal menambah data");
+  //     }
+  //     return { success: true };
+  //   } catch (err) {
+  //     const msg = err instanceof Error ? err.message : "Gagal menambah data";
+  //     setError(msg);
+  //     // toast.error(msg);
+  //     return { success: false, error: err as Error };
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // helper kecil
+const isFormData = (body: unknown): body is FormData =>
+  typeof FormData !== "undefined" && body instanceof FormData;
+
+const addFraud = async (
+  fraud: FraudReq | FormData
+): Promise<{ success: boolean; error?: Error }> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const options: RequestInit = {
+      method: "POST",
+      credentials: "include",
+      body: isFormData(fraud) ? fraud : JSON.stringify(fraud),
+      headers: isFormData(fraud) ? undefined : { "Content-Type": "application/json" },
+    };
+
+    const res = await fetch("https://app.prazelab.my.id/api/fraud", options);
+    const result = await res.json();
+
+    // Terima dua kemungkinan bentuk response (status: "success") atau (success: true)
+    const ok = res.ok && (result?.status === "success" || result?.success === true);
+    if (!ok) throw new Error(result?.message || "Gagal menambah data");
+
+    return { success: true };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "Gagal menambah data";
+    setError(msg);
+    return { success: false, error: err as Error };
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  // const updateFraud = async (
+  //   fraud: Fraud
+  // ): Promise<{ success: boolean; error?: Error }> => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+
+  //     const res = await fetch(
+  //       `https://app.prazelab.my.id/api/fraud/${fraud.id}`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         credentials: "include",
+  //         body: JSON.stringify(fraud),
+  //       }
+  //     );
+
+  //     const result = await res.json();
+
+  //     if (!res.ok || !result.success || !result.data) {
+  //       throw new Error(result.message || "Gagal memperbarui data fraud");
+  //     }
+
+  //     setFrauds((prev) =>
+  //       prev.map((f) => (f.id === result.data.id ? result.data : f))
+  //     );
+
+  //     setSelectedFraud(null);
+  //     setMode("create");
+  //     await refreshData();
+  //     return { success: true };
+  //   } catch (err) {
+  //     const errorMessage =
+  //       err instanceof Error
+  //         ? err.message
+  //         : "Terjadi kesalahan saat memperbarui data";
+
+  //     setError(errorMessage);
+  //     return { success: false, error: err as Error };
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+const updateFraud = async (
+  fraud: Fraud | FormData
+): Promise<{ success: boolean; error?: Error }> => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    // Ambil id untuk URL
+    let id: number | undefined;
+    let body: BodyInit | null = null;
+    let headers: HeadersInit | undefined = undefined;
+
+    if (isFormData(fraud)) {
+      const rawId = fraud.get("id");
+      id = rawId != null ? Number(rawId) : undefined;
+      body = fraud;              // biarkan browser set multipart boundary
+      headers = undefined;       // JANGAN set Content-Type untuk FormData
+    } else {
+      id = fraud.id;
+      body = JSON.stringify(fraud);
+      headers = { "Content-Type": "application/json" };
     }
-  };
 
-  const updateFraud = async (
-    fraud: Fraud
-  ): Promise<{ success: boolean; error?: Error }> => {
-    try {
-      setLoading(true);
-      setError(null);
+    if (!id) throw new Error("ID laporan tidak ditemukan untuk update.");
 
-      const res = await fetch(
-        `https://app.prazelab.my.id/api/fraud/${fraud.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(fraud),
-        }
-      );
+    const res = await fetch(`https://app.prazelab.my.id/api/fraud/${id}`, {
+      method: "PUT",
+      credentials: "include",
+      headers,
+      body,
+    });
 
-      const result = await res.json();
+    const result = await res.json();
+    const ok = res.ok && (result?.success === true || result?.status === "success");
 
-      if (!res.ok || !result.success || !result.data) {
-        throw new Error(result.message || "Gagal memperbarui data fraud");
-      }
-
-      setFrauds((prev) =>
-        prev.map((f) => (f.id === result.data.id ? result.data : f))
-      );
-
-      setSelectedFraud(null);
-      setMode("create");
-      await refreshData();
-      return { success: true };
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : "Terjadi kesalahan saat memperbarui data";
-
-      setError(errorMessage);
-      return { success: false, error: err as Error };
-    } finally {
-      setLoading(false);
+    if (!ok || !result?.data) {
+      throw new Error(result?.message || "Gagal memperbarui data fraud");
     }
-  };
+
+    setFrauds((prev) => prev.map((f) => (f.id === result.data.id ? result.data : f)));
+    setSelectedFraud(null);
+    setMode("create");
+    await refreshData();
+
+    return { success: true };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan saat memperbarui data";
+    setError(errorMessage);
+    return { success: false, error: err as Error };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const deleteFraud = async (id: number) => {
     const confirmDelete = window.confirm("Yakin ingin menghapus data ini?");
@@ -222,8 +313,9 @@ export default function Home() {
                     selectedFraud
                       ? {
                         id: selectedFraud.id,
-                        types: selectedFraud.type_message,
+                        types: selectedFraud.types,
                         fraud_message: selectedFraud.fraud_message,
+                        bukti: null,
                       }
                       : undefined
                   }

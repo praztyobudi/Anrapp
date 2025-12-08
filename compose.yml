@@ -5,6 +5,7 @@ services:
     volumes:
       # - ./nginx/default.conf:/etc/nginx/conf.d:ro
       - ./nginx:/etc/nginx/conf.d:ro
+      - ./src/uploads:/app/src/uploads 
     ports:
       - "8800:80"
     networks:
@@ -22,6 +23,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./pgdata:/var/lib/postgresql/data
+      - ./uploads:/app/uploads
     ports:
       - "5444:5432"
     networks:
