@@ -1,4 +1,6 @@
 import { query } from "../../../config/db.js";
+import fs from "fs/promises";
+import path from "path";
 
 export const fraudRepo = {
   getAllFraud: async (userId, userRole) => {
@@ -41,7 +43,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
-              f.img as bukti,
+              f.img,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -56,7 +58,7 @@ export const fraudRepo = {
               f.user_id, 
               f.fraud_message, 
               t.types as type_message,
-              f.img as bukti,
+              f.img,
               created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
               updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
               FROM tb_fraud f 
@@ -66,6 +68,23 @@ export const fraudRepo = {
       const result = await query(sql, [id, userId]);
       return result.rows[0];
     }
+  },
+
+  getFraudById_del: async (id) => {
+    const sql = `SELECT 
+      f.id,
+      f.user_id, 
+      f.fraud_message, 
+      t.types as type_message,
+      f.img,
+      created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+      updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+      FROM tb_fraud f 
+      LEFT JOIN tb_types_fraud t ON f.type_id = t.id
+      WHERE f.id = $1
+      order by updated_at desc;`;
+    const result = await query(sql, [id]);
+    return result.rows[0];
   },
 
   createFraud: async ({ user_id, fraud_message, types, img }) => {
@@ -82,61 +101,66 @@ export const fraudRepo = {
   },
 
   updateFraud: async (id, { fraud_message, types, img }) => {
+    const oldFraud = await fraudRepo.getFraudById_del(id);
     const findTypeName = `SELECT id FROM tb_types_fraud WHERE types = $1`;
     const outputResult = await query(findTypeName, [types]);
     const idType = outputResult.rows[0].id;
+
+    if (!oldFraud) {
+      throw new Error(`Fraud with id ${id} not found`);
+    }
 
     let sql;
     let params;
 
     if (img !== undefined) {
-    sql = `
-      UPDATE tb_fraud
-      SET 
-        fraud_message = $1,
-        type_id = $2,
-        img = $3,
-        updated_at = NOW()
-      WHERE id = $4
-      RETURNING 
-        id,
-        user_id,
-        fraud_message,
-        type_id,
-        img,
-        created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-        updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-    `;
-    params = [fraud_message, idType, img, id];
-  } else {
-    // 3. Kalau img TIDAK dikirim → jangan sentuh kolom img
-    sql = `
-      UPDATE tb_fraud
-      SET 
-        fraud_message = $1,
-        type_id = $2,
-        updated_at = NOW()
-      WHERE id = $3
-      RETURNING 
-        id,
-        user_id,
-        fraud_message,
-        type_id,
-        img,
-        created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-        updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
-    `;
-    params = [fraud_message, idType, id];
-  }
-    // const sql = `UPDATE tb_fraud
-    //         SET fraud_message = $1, type_id = $2, updated_at = NOW() 
-    //         WHERE id = $3 RETURNING 
-    //         id,
-    //         user_id, 
-    //         fraud_message, 
-    //         type_id,
-    //         created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
-    //         updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
+      // Hapus old image pakai exact logic dari deleteFraud
+      try {
+        if (oldFraud.img) {
+          const fullPath = path.join(process.cwd(), 'src', oldFraud.img);
+          await fs.unlink(fullPath);
+          sql = `
+          UPDATE tb_fraud
+          SET 
+            fraud_message = $1,
+            type_id = $2,
+            img = $3,
+            updated_at = NOW()
+          WHERE id = $4
+          RETURNING 
+            id,
+            user_id,
+            fraud_message,
+            type_id,
+            img,
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+        `;
+          params = [fraud_message, idType, img, id];
+        } else {
+          sql = `
+          UPDATE tb_fraud
+          SET 
+            fraud_message = $1,
+            type_id = $2,
+            updated_at = NOW()
+          WHERE id = $3
+          RETURNING 
+            id,
+            user_id,
+            fraud_message,
+            type_id,
+            img,
+            created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
+            updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at
+        `;
+          params = [fraud_message, idType, id];
+        }
+      } catch (err) {
+        console.error("❌ Failed to delete file:", err);
+      }
+    }
+
     const result = await query(sql, params);
     const updateResult = result.rows[0].id;
     //Ambil detail lengkap
@@ -149,9 +173,12 @@ export const fraudRepo = {
             user_id, 
             fraud_message, 
             type_id,
+            img,
             created_at AT TIME ZONE 'Asia/Jakarta' AS created_at,
             updated_at AT TIME ZONE 'Asia/Jakarta' AS updated_at`;
     const result = await query(sql, [id]);
     return result.rows[0];
   },
 };
+
+

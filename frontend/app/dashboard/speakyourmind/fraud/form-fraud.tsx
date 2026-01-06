@@ -62,7 +62,6 @@ export default function FormFraud({
     try {
       const id = mode === "edit" ? defaultValue?.id : undefined;
       const hasFile =
-        // @ts-ignore — jika FraudSchema kamu sudah ditambah field `bukti`, hapus ts-ignore
         data.bukti && data.bukti instanceof File;
 
       if (hasFile) {

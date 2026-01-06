@@ -127,7 +127,7 @@ const addFraud = async (
 
     const options: RequestInit = {
       method: "POST",
-      credentials: "include",
+      // credentials: "include",
       body: isFormData(fraud) ? fraud : JSON.stringify(fraud),
       headers: isFormData(fraud) ? undefined : { "Content-Type": "application/json" },
     };

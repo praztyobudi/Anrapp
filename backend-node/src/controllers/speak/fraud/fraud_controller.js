@@ -89,7 +89,6 @@ export const deleteFraud = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await FraudService.deleteFraud(id);
-    console.log("result", result);
     if (!result) {
       return errorResponse(res, "Fraud report not found", null, 404);
     }

@@ -12,8 +12,6 @@ import { fileURLToPath } from 'url';
 
 const app = express();
 
-console.log("Upload Directorya :", baseDir);
-
 app.use("/uploads", express.static(baseDir, {
   maxAge: '1d',
   immutable: false,
