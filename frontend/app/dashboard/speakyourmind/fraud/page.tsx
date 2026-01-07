@@ -134,7 +134,7 @@ const addFraud = async (
 
     const res = await fetch("https://app.prazelab.my.id/api/fraud", options);
     const result = await res.json();
-
+console.log("result >>>" + result);
     // Terima dua kemungkinan bentuk response (status: "success") atau (success: true)
     const ok = res.ok && (result?.status === "success" || result?.success === true);
     if (!ok) throw new Error(result?.message || "Gagal menambah data");
